@@ -1,7 +1,23 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World from FastAPI running on Heroku!"}
+
 
 @app.post("/get-file/")
 async def get_file(repo_url: str, file_path: str):
@@ -19,13 +35,15 @@ async def get_file(repo_url: str, file_path: str):
         raise HTTPException(status_code=404, detail="File not found")
 
 
+"""
 # Example usage with curl from the terminal:
-# curl -X 'POST' \
-#   'http://127.0.0.1:8000/get-file/' \
-#   -H 'accept: application/json' \
-#   -H 'Content-Type: application/json' \
-#   -d '{
-#   "repo_url": "user/repo/branch",
-#   "file_path": "path/to/file"
-# }'
 
+ curl -X 'POST' \
+   'http://http://televate-1fb46ecbb8ff.herokuapp.com:5000/get-file/' \
+   -H 'accept: application/json' \
+   -H 'Content-Type: application/json' \
+   -d '{
+   "repo_url": "justusjb/streamlit_workshop/main",
+   "file_path": "main.py"
+ }'
+"""
