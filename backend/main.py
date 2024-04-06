@@ -48,6 +48,8 @@ async def get_repo_structure(repo_url: str):
     api_url = f"https://api.github.com/repos/{repo_url}/contents/"
 
     response = requests.get(api_url)
+    print("Status from Git request", response.status_code)
+    print("Response from Git request", response.json())
     if response.status_code == 200:
         repo_structure = response.json()
         # Filter out only relevant information to minimize bandwidth and processing
