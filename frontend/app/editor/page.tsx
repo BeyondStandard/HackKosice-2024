@@ -5,9 +5,9 @@ import Editor from '@monaco-editor/react';
 import React, { useState, useEffect } from 'react';
 
 // let treeStructure = {
-  // "name": "project",
-  // "type": "folder",
-  // "children": [
+//   "name": "project",
+//   "type": "folder",
+//   "children": [
 //     {
 //       "name": "docs",
 //       "type": "folder",
@@ -59,36 +59,178 @@ import React, { useState, useEffect } from 'react';
 //   ]
 // };
 
-// const FileTree = ({ node }) => {
-//   if (node.type === "folder") {
-//     return (
-//       <div>
-//         <strong>{node.name}/</strong>
-//         <div style={{ paddingLeft: "20px" }}>
-          // {node.children.map((child, index) => (
-          //   <FileTree key={index} node={child} />
-          // ))}
-//         </div>
-//       </div>
-//     );
-//   } else {
-//     return <div>{node.name}</div>;
-//   }
-// };
+// Mocked root structure
+const rootStructure = [
+  { "name": ".github", "path": ".github", "type": "dir" },
+  { "name": ".gitignore", "path": ".gitignore", "type": "file" },
+  // Add other initial items here...
+  { "name": "scripts", "path": "scripts", "type": "dir" },
+  { "name": "docs", "path": "docs", "type": "dir" },
+];
 
+// Mock function to simulate fetching directory contents
+const fetchDirectoryContents = (path) => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const repoUrl = queryParams.get('repo_url');
+  const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${path}`
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const data = await response.json()
+// return new Promise(resolve => {
+  //     setTimeout(() => {
+  //         // Return a mocked response based on the path
+  //         if(path === "docs") {
+  //             resolve([{ "name": "TELEMETRY.md", "path": "docs/TELEMETRY.md", "type": "file" }]);
+  //         } else {
+  //             // Return an empty array for simplicity, implement your actual fetching logic here
+  //             resolve([]);
+  //         }
+  //     }, 500); // Simulate network delay
+  // });
+};
 
+const Item = ({ name, path, type, fetchContents }) => {
+  
+  const [isOpen, setIsOpen] = useState(false);
+  const [contents, setContents] = useState([]);
+
+  const handleClick = async () => {
+      if (type === 'dir') {
+          if (!isOpen) {
+              const fetchedContents = await fetchContents(path);
+              setContents(fetchedContents);
+          }
+          setIsOpen(!isOpen);
+      }
+  };
+
+  return (
+      <div>
+          <div onClick={handleClick} style={{ cursor: type === 'dir' ? 'pointer' : 'default' }}>
+              {name} {type === 'dir' ? isOpen ? '(-)' : '(+)' : ''}
+          </div>
+          {isOpen && type === 'dir' && (
+              <div style={{ marginLeft: '20px' }}>
+                  {contents.length > 0 ? (
+                      contents.map(item => (
+                          <Item key={item.path} {...item} fetchContents={fetchContents} />
+                      ))
+                  ) : (
+                      <div>No items found</div>
+                  )}
+              </div>
+          )}
+      </div>
+  );
+};
+
+const Folder = ({ name, path, fetchContents }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [contents, setContents] = useState([]);
+
+  const toggleFolder = async () => {
+      if (!isOpen) {
+          const fetchedContents = await fetchContents(path);
+          setContents(fetchedContents);
+      }
+      setIsOpen(!isOpen);
+  };
+
+  return (
+      <div>
+          <div onClick={toggleFolder} style={{ cursor: 'pointer' }}>
+              {name} {isOpen ? '(-)' : '(+)'}
+          </div>
+          {isOpen && (
+              <div style={{ marginLeft: '20px' }}>
+                  {contents.map(item => (
+                      <div key={item.path}>
+                          {item.type === 'dir' ? (
+                              <Folder name={item.name} path={item.path} fetchContents={fetchContents} />
+                          ) : (
+                              <div>{item.name}</div>
+                          )}
+                      </div>
+                  ))}
+              </div>
+          )}
+      </div>
+  );
+};
+
+const FolderStructure = ({ structure }) => {
+  return (
+      <div>
+          {structure.map(item => (
+              <Item key={item.path} {...item} fetchContents={fetchDirectoryContents} />
+          ))}
+      </div>
+  );
+};
 
 
 export default function App() {
   // 'https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [repoStrucutre, setRepoStructure] = useState([]);
+  const [repoStrucutre, setRepoStructure] = useState({});
   const [editorValue, setEditorValue] = useState('');
   const [editorLanguage, setEditorLanguage] = useState('');
+  const [rootStructure, setRootStructure] = useState([]);
+
+  const fetchDirectory = async (node) => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const repoUrl = queryParams.get('repo_url');
+    const dirPath = node['path']
+    const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${dirPath}`
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    // setRepoStructure(repoStrucutre => {
+    //   let newRepoStructure = {
+    //     'children': repoStrucutre['children']
+    //     'name': repoUrl,
+    //     'type': 'dir',
+    //   }
+    // })
+    data.forEach(element => {
+      element['children'] = []
+      node['children'].push(element)
+    });
+    console.log(repoStrucutre)
+    setRepoStructure(repoStrucutre => {
+      return repoStrucutre
+    })
+  }
   
+  const FileTree = ({ node }) => {
+    console.log('meow', {node})
+    if (node.type === "dir") {
+      return (
+        <div>
+          <strong>{node.name}/</strong>
+          <div style={{ paddingLeft: "20px" }}>
+            {node['children'].map((child, index) => (
+              <div onClick={() => fetchDirectory(child)}>
+                <FileTree key={index} node={child} />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    } else {
+      return <div onClick={() => fetchFile(node.name)}>{node.name} file</div>;
+    }
+  };
+
   const fetchFile = async (fileName: string) => {
-    const fileUrl = `https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop&file_path=${fileName}`
+    const queryParams = new URLSearchParams(window.location.search);
+    const repoUrl = queryParams.get('repo_url');
+    const fileUrl = `https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=${repoUrl}&file_path=${fileName}`
     const response = await fetch(fileUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -104,15 +246,24 @@ export default function App() {
     }
   }
   
-  const FileTree = ({ files }) => {
-    return (
-      <div>
-        {files.map((file, index) => (
-          <div onClick={() => fetchFile(file.name)}>{file.name}</div>
-        ))}
-      </div>
-    )
-  };
+  // const FileTree = ({ files }) => {
+  //   return (
+  //     <div>
+  //       {files.map((file, index) => (
+  //         <div onClick={() => fetchFile(file.name)}>
+  //       {file.name}
+  //       {file.type === 'dir' && (
+  //         <button onClick={(e) => {
+  //           e.stopPropagation(); // Prevent triggering the div's onClick
+  //           // Handle button click action here
+  //           console.log(`Button for ${file.name} clicked`);
+  //         }}>Button</button>
+  //       )}
+  //           </div>
+  //       ))}
+  //     </div>
+  //   )
+  // };
   useEffect(() => {
     // Function to fetch repo data
     const fetchRepoData = async () => {
@@ -133,9 +284,13 @@ export default function App() {
         }
 
         const data = await response.json();
-
+        data.forEach(element => {
+          if (element.type === 'dir') {
+            element['children'] = []
+          }
+        });
         
-        setRepoStructure(data);
+        setRootStructure(data);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -162,7 +317,8 @@ export default function App() {
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: "gray" }}>
       <div style={{ flex: 1 }}>
-        <FileTree files={repoStrucutre} />
+        <FolderStructure structure={rootStructure}/>
+        {/* <FileTree node={repoStrucutre} /> */}
       </div>
       <div style={{ flex: 4 }}>
         {/* <DiffEditor height="100vh" width="100%" original="// some comment" modified="// some comment \r\n ahoj\\" /> */}
