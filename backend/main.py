@@ -62,7 +62,8 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
 async def get_repo_structure(repo_url: str):
     # Construct the GitHub API URL for getting repo contents
     # Adjust based on the structure of 'repo_url' you expect
-    api_url = f"https://api.github.com/repos/{repo_url}/contents/"
+    # api_url = f"https://api.github.com/repos/{repo_url}/contents/"
+    api_url = f"https://api.github.com/repos/{repo_url}/git/trees/main?recursive=1"
 
     response = requests.get(api_url, headers=get_github_token_header())
     print("Response status code: ", response.status_code)
