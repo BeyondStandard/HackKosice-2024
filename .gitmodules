@@ -1,0 +1,3 @@
+[submodule "repositories/TicTacTOBOL"]
+	path = repositories/TicTacTOBOL
+	url = git@github.com:ShaunLawrie/TicTacTOBOL.git
