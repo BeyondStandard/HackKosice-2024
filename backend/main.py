@@ -4,7 +4,7 @@ import requests
 from typing import List
 import os
 from pydantic import BaseModel
-
+import time
 
 app = FastAPI()
 
@@ -95,7 +95,7 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
 @app.post("/new-code/")
 async def get_new_code(code: Code):
-
+    time.sleep(3)
     long_code = """
     import streamlit as st
     import pandas as pd
@@ -141,6 +141,7 @@ async def get_new_code(code: Code):
 
 @app.post("/code-description/")
 async def get_new_code(code: Code):
+    time.sleep(3)
     code_desc = """
     This code snippet is a Streamlit application that visualizes Uber pickups in NYC.
     It loads a dataset of Uber pickups in NYC and displays the raw data when a checkbox is checked.
