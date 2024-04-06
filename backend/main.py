@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-class CodeRequest(BaseModel):
+class Code(BaseModel):
     old_code: str
 
 
@@ -93,8 +93,8 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
 
 
-@app.get("/get-new-code/")
-async def get_new_code(old_code: str):
+@app.post("/new-code/")
+async def get_new_code(code: Code):
 
     long_code = """
     import streamlit as st
