@@ -1,0 +1,58 @@
+version: 2
+project: televate
+
+options:
+    LANGCHAIN_TRACING_V2: true
+
+    repository:
+        - TicTacTOBOL
+
+    gptModel:
+        - gpt-3.5-turbo-0125
+        - gpt-3.5-turbo
+        - gpt-3.5-turbo-1106
+        - gpt-3.5-turbo-instruct
+        - gpt-4-0125-preview
+        - gpt-4-turbo-preview
+        - gpt-4-1106-preview
+        - gpt-4-vision-preview
+        - gpt-4-1106-vision-preview
+        - gpt-4
+        - gpt-4-0613
+        - gpt-4-32k
+        - gpt-4-32k-0613
+
+    embeddingModel:
+        - text-embedding-3-small
+        - text-embedding-ada-002
+        - text-embedding-3-large
+
+commands:
+    setup:
+        help: setup the project
+        exec: |
+            python3 -m venv .venv
+            source .venv/bin/activate
+            pip install poetry
+            poetry install --no-root
+
+    tokenize:
+        help: tokenize the data
+        commands:
+            pickle:
+                help: pickle the html data
+                exec: |
+                    source .venv/bin/activate
+                    python3 tokenizer/pickle_data.py
+
+            rebuild:
+                help: rebuild the tokenizer
+                exec: |
+                    source .venv/bin/activate
+                    python3 tokenizer/rebuild.py
+
+    televate:
+        help: ask for refactoring
+        exec: |
+            source .venv/bin/activate
+            python3 backend/query.py
