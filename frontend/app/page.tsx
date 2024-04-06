@@ -14,8 +14,8 @@ export default function Home() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py', { // Replace 'YOUR_BACKEND_ENDPOINT' with your actual endpoint
-        method: 'POST', // or 'GET', depending on your backend setup
+      const response = await fetch('http://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop&file_path=main.py', {
+        method: 'GET',
       });
 
       if (response.ok) {
