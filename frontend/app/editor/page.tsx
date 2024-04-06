@@ -3,6 +3,7 @@
 import { DiffEditor } from '@monaco-editor/react';
 import Editor from '@monaco-editor/react';
 import React, { useState, useEffect } from 'react';
+import { Button } from 'reactstrap';
 
 // Mock function to simulate fetching directory contents
 const fetchDirectoryContents = async (path) => {
@@ -23,10 +24,11 @@ export default function App() {
   // 'https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [repoStrucutre, setRepoStructure] = useState({});
   const [editorValue, setEditorValue] = useState('');
   const [editorLanguage, setEditorLanguage] = useState('');
   const [rootStructure, setRootStructure] = useState([]);
+  const [useDiffEditor, setUseDiffEditor] = useState(false);
+  const [diffEditorModified, setDiffEditorModified] = useState('');
 
   const fetchFile = async (fileName: string) => {
     console.log({fileName})
@@ -177,6 +179,27 @@ export default function App() {
     return <div>Error: {error}</div>;
   }
 
+  const compileOnClick = async () => {
+    const url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/`
+    const body = {
+      'old_code': editorValue
+    }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    setUseDiffEditor(true);
+    setDiffEditorModified(data);
+  }
+
 
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: "gray" }}>
@@ -184,8 +207,11 @@ export default function App() {
         <FolderStructure structure={rootStructure} onFileClick={fetchFile}/>
       </div>
       <div style={{ flex: 4 }}>
-        {/* <DiffEditor height="100vh" width="100%" original="// some comment" modified="// some comment \r\n ahoj\\" /> */}
-        <Editor height="100vh" defaultLanguage="javascript" defaultValue="// Select a file" value={editorValue} onChange={handleEditorChange} language={editorLanguage} />;
+        <DiffEditor height="80vh" width="100%" original={editorValue} modified={diffEditorModified} />
+        <div style={{height: '20vh', backgroundColor: 'black', color: 'white'}}>
+          Explanation
+          <Button color="success" onClick={compileOnClick}>Compile</Button>
+        </div>
       </div>
     </div>
   );
