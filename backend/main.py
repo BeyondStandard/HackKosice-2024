@@ -49,6 +49,7 @@ async def get_repo_structure(repo_url: str):
 
     response = requests.get(api_url)
     print("Response status code: ", response.status_code)
+    print("Response content: ", response.content)
     if response.status_code == 200:
         repo_structure = response.json()
         # Filter out only relevant information to minimize bandwidth and processing
@@ -64,6 +65,8 @@ async def get_directory_contents(repo_url: str, dir_path: str):
     api_url = f"https://api.github.com/repos/{repo_url}/contents/{dir_path}"
 
     response = requests.get(api_url)
+    print("Response status code: ", response.status_code)
+    print("Response content: ", response.content)
     if response.status_code == 200:
         directory_structure = response.json()
         directory_contents = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in directory_structure]
