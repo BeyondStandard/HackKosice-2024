@@ -19,7 +19,7 @@ async def root():
     return {"message": "Hello World from FastAPI running on Heroku!"}
 
 
-@app.post("/get-file/")
+@app.get("/get-file/")
 async def get_file(repo_url: str, file_path: str, branch: str = "main"):
     """
     Construct the raw content URL for GitHub
@@ -41,7 +41,7 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
         raise HTTPException(status_code=404, detail="File not found")
 
 
-@app.post("/get-repo-structure/")
+@app.get("/get-repo-structure/")
 async def get_repo_structure(repo_url: str):
     # Construct the GitHub API URL for getting repo contents
     # Adjust based on the structure of 'repo_url' you expect
