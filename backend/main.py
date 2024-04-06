@@ -139,5 +139,14 @@ async def get_new_code(code: Code):
     return long_code
 
 
+@app.post("/code-description/")
+async def get_new_code(code: Code):
+    code_desc = """
+    This code snippet is a Streamlit application that visualizes Uber pickups in NYC.
+    It loads a dataset of Uber pickups in NYC and displays the raw data when a checkbox is checked.
+    It also displays the number of pickups by hour in a bar chart and a map of all pickups at a selected hour.
+    """
+
+    return code_desc
 
 
