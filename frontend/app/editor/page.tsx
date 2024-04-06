@@ -29,6 +29,7 @@ export default function App() {
   const [rootStructure, setRootStructure] = useState([]);
   const [useDiffEditor, setUseDiffEditor] = useState(false);
   const [diffEditorModified, setDiffEditorModified] = useState('');
+  const [explanation, setExplanation] = useState('');
 
   const fetchFile = async (fileName: string) => {
     console.log({fileName})
@@ -180,11 +181,11 @@ export default function App() {
   }
 
   const compileOnClick = async () => {
-    const url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/`
-    const body = {
+    let url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/`
+    let body = {
       'old_code': editorValue
     }
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
@@ -195,9 +196,27 @@ export default function App() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    let data = await response.json();
     setUseDiffEditor(true);
     setDiffEditorModified(data);
+
+    url = `https://televate-1fb46ecbb8ff.herokuapp.com/code-description/`
+    body = {
+      'old_code': editorValue
+    }
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    data = await response.json();
+    setExplanation(data)
   }
 
 
@@ -209,8 +228,10 @@ export default function App() {
       <div style={{ flex: 4 }}>
         <DiffEditor height="80vh" width="100%" original={editorValue} modified={diffEditorModified} />
         <div style={{height: '20vh', backgroundColor: 'black', color: 'white'}}>
-          Explanation
           <Button color="success" onClick={compileOnClick}>Compile</Button>
+          <div>
+            { explanation }
+          </div>
         </div>
       </div>
     </div>
