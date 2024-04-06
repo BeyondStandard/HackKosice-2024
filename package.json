@@ -1,0 +1,27 @@
+{
+  "name": "hackkosice-2024",
+  "version": "1.0.0",
+  "description": "hello",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeyondStandard/HackKosice-2024.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BeyondStandard/HackKosice-2024/issues"
+  },
+  "homepage": "https://github.com/BeyondStandard/HackKosice-2024#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  }
+}

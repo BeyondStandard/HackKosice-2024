@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { DiffEditor } from '@monaco-editor/react';
-import Editor from '@monaco-editor/react';
-import React, { useState, useEffect } from 'react';
+import { DiffEditor } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
+import React, { useState, useEffect } from "react";
 
 // let treeStructure = {
 //   "name": "project",
@@ -61,24 +61,24 @@ import React, { useState, useEffect } from 'react';
 
 // Mocked root structure
 const rootStructure = [
-  { "name": ".github", "path": ".github", "type": "dir" },
-  { "name": ".gitignore", "path": ".gitignore", "type": "file" },
+  { name: ".github", path: ".github", type: "dir" },
+  { name: ".gitignore", path: ".gitignore", type: "file" },
   // Add other initial items here...
-  { "name": "scripts", "path": "scripts", "type": "dir" },
-  { "name": "docs", "path": "docs", "type": "dir" },
+  { name: "scripts", path: "scripts", type: "dir" },
+  { name: "docs", path: "docs", type: "dir" },
 ];
 
 // Mock function to simulate fetching directory contents
-const fetchDirectoryContents = (path) => {
+const fetchDirectoryContents = async (path: any) => {
   const queryParams = new URLSearchParams(window.location.search);
-  const repoUrl = queryParams.get('repo_url');
-  const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${path}`
+  const repoUrl = queryParams.get("repo_url");
+  const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${path}`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  const data = await response.json()
-// return new Promise(resolve => {
+  const data = await response.json();
+  // return new Promise(resolve => {
   //     setTimeout(() => {
   //         // Return a mocked response based on the path
   //         if(path === "docs") {
@@ -92,37 +92,39 @@ const fetchDirectoryContents = (path) => {
 };
 
 const Item = ({ name, path, type, fetchContents }) => {
-  
   const [isOpen, setIsOpen] = useState(false);
   const [contents, setContents] = useState([]);
 
   const handleClick = async () => {
-      if (type === 'dir') {
-          if (!isOpen) {
-              const fetchedContents = await fetchContents(path);
-              setContents(fetchedContents);
-          }
-          setIsOpen(!isOpen);
+    if (type === "dir") {
+      if (!isOpen) {
+        const fetchedContents = await fetchContents(path);
+        setContents(fetchedContents);
       }
+      setIsOpen(!isOpen);
+    }
   };
 
   return (
-      <div>
-          <div onClick={handleClick} style={{ cursor: type === 'dir' ? 'pointer' : 'default' }}>
-              {name} {type === 'dir' ? isOpen ? '(-)' : '(+)' : ''}
-          </div>
-          {isOpen && type === 'dir' && (
-              <div style={{ marginLeft: '20px' }}>
-                  {contents.length > 0 ? (
-                      contents.map(item => (
-                          <Item key={item.path} {...item} fetchContents={fetchContents} />
-                      ))
-                  ) : (
-                      <div>No items found</div>
-                  )}
-              </div>
-          )}
+    <div>
+      <div
+        onClick={handleClick}
+        style={{ cursor: type === "dir" ? "pointer" : "default" }}
+      >
+        {name} {type === "dir" ? (isOpen ? "(-)" : "(+)") : ""}
       </div>
+      {isOpen && type === "dir" && (
+        <div style={{ marginLeft: "20px" }}>
+          {contents.length > 0 ? (
+            contents.map((item) => (
+              <Item key={item.path} {...item} fetchContents={fetchContents} />
+            ))
+          ) : (
+            <div>No items found</div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -131,60 +133,67 @@ const Folder = ({ name, path, fetchContents }) => {
   const [contents, setContents] = useState([]);
 
   const toggleFolder = async () => {
-      if (!isOpen) {
-          const fetchedContents = await fetchContents(path);
-          setContents(fetchedContents);
-      }
-      setIsOpen(!isOpen);
+    if (!isOpen) {
+      const fetchedContents = await fetchContents(path);
+      setContents(fetchedContents);
+    }
+    setIsOpen(!isOpen);
   };
 
   return (
-      <div>
-          <div onClick={toggleFolder} style={{ cursor: 'pointer' }}>
-              {name} {isOpen ? '(-)' : '(+)'}
-          </div>
-          {isOpen && (
-              <div style={{ marginLeft: '20px' }}>
-                  {contents.map(item => (
-                      <div key={item.path}>
-                          {item.type === 'dir' ? (
-                              <Folder name={item.name} path={item.path} fetchContents={fetchContents} />
-                          ) : (
-                              <div>{item.name}</div>
-                          )}
-                      </div>
-                  ))}
-              </div>
-          )}
+    <div>
+      <div onClick={toggleFolder} style={{ cursor: "pointer" }}>
+        {name} {isOpen ? "(-)" : "(+)"}
       </div>
+      {isOpen && (
+        <div style={{ marginLeft: "20px" }}>
+          {contents.map((item) => (
+            <div key={item.path}>
+              {item.type === "dir" ? (
+                <Folder
+                  name={item.name}
+                  path={item.path}
+                  fetchContents={fetchContents}
+                />
+              ) : (
+                <div>{item.name}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
 const FolderStructure = ({ structure }) => {
   return (
-      <div>
-          {structure.map(item => (
-              <Item key={item.path} {...item} fetchContents={fetchDirectoryContents} />
-          ))}
-      </div>
+    <div>
+      {structure.map((item) => (
+        <Item
+          key={item.path}
+          {...item}
+          fetchContents={fetchDirectoryContents}
+        />
+      ))}
+    </div>
   );
 };
-
 
 export default function App() {
   // 'https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [repoStrucutre, setRepoStructure] = useState({});
-  const [editorValue, setEditorValue] = useState('');
-  const [editorLanguage, setEditorLanguage] = useState('');
+  const [editorValue, setEditorValue] = useState("");
+  const [editorLanguage, setEditorLanguage] = useState("");
   const [rootStructure, setRootStructure] = useState([]);
 
   const fetchDirectory = async (node) => {
     const queryParams = new URLSearchParams(window.location.search);
-    const repoUrl = queryParams.get('repo_url');
-    const dirPath = node['path']
-    const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${dirPath}`
+    const repoUrl = queryParams.get("repo_url");
+    const dirPath = node["path"];
+    const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${dirPath}`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -197,24 +206,25 @@ export default function App() {
     //     'type': 'dir',
     //   }
     // })
-    data.forEach(element => {
-      element['children'] = []
-      node['children'].push(element)
+
+    data.forEach((element) => {
+      element["children"] = [];
+      node["children"].push(element);
     });
-    console.log(repoStrucutre)
-    setRepoStructure(repoStrucutre => {
-      return repoStrucutre
-    })
-  }
-  
+    console.log(repoStrucutre);
+    setRepoStructure((repoStrucutre) => {
+      return repoStrucutre;
+    });
+  };
+
   const FileTree = ({ node }) => {
-    console.log('meow', {node})
+    console.log("meow", { node });
     if (node.type === "dir") {
       return (
         <div>
           <strong>{node.name}/</strong>
           <div style={{ paddingLeft: "20px" }}>
-            {node['children'].map((child, index) => (
+            {node["children"].map((child, index) => (
               <div onClick={() => fetchDirectory(child)}>
                 <FileTree key={index} node={child} />
               </div>
@@ -229,23 +239,23 @@ export default function App() {
 
   const fetchFile = async (fileName: string) => {
     const queryParams = new URLSearchParams(window.location.search);
-    const repoUrl = queryParams.get('repo_url');
-    const fileUrl = `https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=${repoUrl}&file_path=${fileName}`
+    const repoUrl = queryParams.get("repo_url");
+    const fileUrl = `https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=${repoUrl}&file_path=${fileName}`;
     const response = await fetch(fileUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.text();
     setEditorValue(JSON.parse(data));
-    if (fileName.endsWith('.py')) {
-      setEditorLanguage('python')
-    } else if (fileName.endsWith('.js')) {
-      setEditorLanguage('javascript')
-    } else if (fileName.endsWith('.md')) {
-      setEditorLanguage('markdown')
+    if (fileName.endsWith(".py")) {
+      setEditorLanguage("python");
+    } else if (fileName.endsWith(".js")) {
+      setEditorLanguage("javascript");
+    } else if (fileName.endsWith(".md")) {
+      setEditorLanguage("markdown");
     }
-  }
-  
+  };
+
   // const FileTree = ({ files }) => {
   //   return (
   //     <div>
@@ -270,12 +280,12 @@ export default function App() {
       try {
         // Get the query params from the URL
         const queryParams = new URLSearchParams(window.location.search);
-        const repoUrl = queryParams.get('repo_url');
+        const repoUrl = queryParams.get("repo_url");
         if (!repoUrl) {
           throw new Error("Repo URL not specified in the query parameters.");
         }
 
-        const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-repo-structure/?repo_url=${repoUrl}`
+        const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-repo-structure/?repo_url=${repoUrl}`;
 
         // Fetch the data from the repo URL
         const response = await fetch(url);
@@ -284,12 +294,12 @@ export default function App() {
         }
 
         const data = await response.json();
-        data.forEach(element => {
-          if (element.type === 'dir') {
-            element['children'] = []
+        data.forEach((element) => {
+          if (element.type === "dir") {
+            element["children"] = [];
           }
         });
-        
+
         setRootStructure(data);
       } catch (error) {
         setError(error.message);
@@ -302,8 +312,8 @@ export default function App() {
   }, []);
 
   const handleEditorChange = (text) => {
-    console.log(JSON.stringify(text))
-  }
+    console.log(JSON.stringify(text));
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -313,16 +323,23 @@ export default function App() {
     return <div>Error: {error}</div>;
   }
 
-
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: "gray" }}>
+    <div style={{ display: "flex", height: "100vh", backgroundColor: "gray" }}>
       <div style={{ flex: 1 }}>
-        <FolderStructure structure={rootStructure}/>
+        <FolderStructure structure={rootStructure} />
         {/* <FileTree node={repoStrucutre} /> */}
       </div>
       <div style={{ flex: 4 }}>
         {/* <DiffEditor height="100vh" width="100%" original="// some comment" modified="// some comment \r\n ahoj\\" /> */}
-        <Editor height="100vh" defaultLanguage="javascript" defaultValue="// Select a file" value={editorValue} onChange={handleEditorChange} language={editorLanguage} />;
+        <Editor
+          height="100vh"
+          defaultLanguage="javascript"
+          defaultValue="// Select a file"
+          value={editorValue}
+          onChange={handleEditorChange}
+          language={editorLanguage}
+        />
+        ;
       </div>
     </div>
   );
