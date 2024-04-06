@@ -41,6 +41,10 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
 
     # Fetch the file content
     response = requests.get(raw_url, headers=get_github_token_header())
+
+    print("Response status code: ", response.status_code)
+    print("Response content: ", response.content)
+    
     if response.status_code == 200:
         # Return the file content
         # You might want to return the content type as well depending on the file
