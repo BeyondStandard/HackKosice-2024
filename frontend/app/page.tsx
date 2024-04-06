@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { InputGroup, Input, Button } from "reactstrap";
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(''); // State to store the input value
