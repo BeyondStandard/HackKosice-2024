@@ -60,11 +60,13 @@ class Data:
         loader = GenericLoader.from_filesystem(
             Data.REP_PATH,
             glob="*",
-            exclude=Data.BINARY_EXCLUDES,
+            # exclude=Data.BINARY_EXCLUDES,
+            suffixes=[".cbl"],
             parser=LanguageParser(language=Language.COBOL),
         )
 
         self.data = loader.load()
+        print(len(self.data))
 
     def load_from_pickle(self, file_path=PICKLE_PATH):
         file_size = os.path.getsize(file_path)

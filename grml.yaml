@@ -2,6 +2,8 @@ version: 2
 project: televate
 
 options:
+    LANGCHAIN_TRACING_V2: true
+
     repository:
         - TicTacTOBOL
 
@@ -48,3 +50,9 @@ commands:
                 exec: |
                     source .venv/bin/activate
                     python3 tokenizer/rebuild.py
+
+    televate:
+        help: ask for refactoring
+        exec: |
+            source .venv/bin/activate
+            python3 backend/query.py
