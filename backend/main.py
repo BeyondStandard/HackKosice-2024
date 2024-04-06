@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+from typing import List
 
 app = FastAPI()
 
@@ -13,7 +14,6 @@ app.add_middleware(
 )
 
 
-
 @app.get("/")
 async def root():
     return {"message": "Hello World from FastAPI running on Heroku!"}
@@ -21,8 +21,14 @@ async def root():
 
 @app.post("/get-file/")
 async def get_file(repo_url: str, file_path: str):
-    # Construct the raw content URL for GitHub
-    # This needs to be adjusted based on the repository hosting service
+    """
+    Construct the raw content URL for GitHub
+    This needs to be adjusted based on the repository hosting service
+
+    Example usage with curl from the terminal:
+
+    curl -X 'POST' "http://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py"
+    """
     raw_url = f"https://raw.githubusercontent.com/{repo_url}/{file_path}"
 
     # Fetch the file content
@@ -35,15 +41,17 @@ async def get_file(repo_url: str, file_path: str):
         raise HTTPException(status_code=404, detail="File not found")
 
 
-"""
-# Example usage with curl from the terminal:
+@app.post("/get-repo-structure/")
+async def get_repo_structure(repo_url: str):
+    # Construct the GitHub API URL for getting repo contents
+    # Adjust based on the structure of 'repo_url' you expect
+    api_url = f"https://api.github.com/repos/{repo_url}/contents/"
 
- curl -X 'POST' \
-   'http://http://televate-1fb46ecbb8ff.herokuapp.com:5000/get-file/' \
-   -H 'accept: application/json' \
-   -H 'Content-Type: application/json' \
-   -d '{
-   "repo_url": "justusjb/streamlit_workshop/main",
-   "file_path": "main.py"
- }'
-"""
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        repo_structure = response.json()
+        # Filter out only relevant information to minimize bandwidth and processing
+        simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
+        return simplified_structure
+    else:
+        raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
