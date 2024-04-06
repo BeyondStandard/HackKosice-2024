@@ -14,13 +14,15 @@ export default function Home() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop&file_path=main.py', {
+
+      const response = await fetch('https://televate-1fb46ecbb8ff.herokuapp.com/get-repo-structure?repo_url='+ inputValue, {
         method: 'GET',
       });
 
       if (response.ok) {
         // If the response is successful, redirect to '/editor'
-        router.push("/editor")
+        // https://hack-kosice-2024.vercel.app/editor?repo_url=Pythagora-io/gpt-pilot
+        router.push("/editor?repo_url=" + inputValue)
       } else {
         // Handle server errors or unsuccessful responses
         alert('Request failed: ' + response.statusText);
