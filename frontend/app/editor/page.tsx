@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { DiffEditor } from '@monaco-editor/react';
 import Editor from '@monaco-editor/react';
@@ -6,10 +6,10 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 
 // Mock function to simulate fetching directory contents
-const fetchDirectoryContents = async (path: any) => {
+const fetchDirectoryContents = async (path) => {
   const queryParams = new URLSearchParams(window.location.search);
-  const repoUrl = queryParams.get("repo_url");
-  const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${path}`;
+  const repoUrl = queryParams.get('repo_url');
+  const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${path}`
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -130,64 +130,19 @@ export default function App() {
           </div>
       );
   };
-=======
-  const [editorValue, setEditorValue] = useState('');
-  const [editorLanguage, setEditorLanguage] = useState('');
-  const [rootStructure, setRootStructure] = useState([]);
-  const [useDiffEditor, setUseDiffEditor] = useState(false);
-  const [diffEditorModified, setDiffEditorModified] = useState('');
-  const [explanation, setExplanation] = useState('');
->>>>>>> 733ab40e4558db395a31b25302e01822d5486ac0
 
-  const fetchFile = async (fileName: string) => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const repoUrl = queryParams.get("repo_url");
-    const fileUrl = `https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=${repoUrl}&file_path=${fileName}`;
-    const response = await fetch(fileUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.text();
-    setEditorValue(JSON.parse(data));
-    if (fileName.endsWith(".py")) {
-      setEditorLanguage("python");
-    } else if (fileName.endsWith(".js")) {
-      setEditorLanguage("javascript");
-    } else if (fileName.endsWith(".md")) {
-      setEditorLanguage("markdown");
-    }
-  };
-
-  // const FileTree = ({ files }) => {
-  //   return (
-  //     <div>
-  //       {files.map((file, index) => (
-  //         <div onClick={() => fetchFile(file.name)}>
-  //       {file.name}
-  //       {file.type === 'dir' && (
-  //         <button onClick={(e) => {
-  //           e.stopPropagation(); // Prevent triggering the div's onClick
-  //           // Handle button click action here
-  //           console.log(`Button for ${file.name} clicked`);
-  //         }}>Button</button>
-  //       )}
-  //           </div>
-  //       ))}
-  //     </div>
-  //   )
-  // };
   useEffect(() => {
     // Function to fetch repo data
     const fetchRepoData = async () => {
       try {
         // Get the query params from the URL
         const queryParams = new URLSearchParams(window.location.search);
-        const repoUrl = queryParams.get("repo_url");
+        const repoUrl = queryParams.get('repo_url');
         if (!repoUrl) {
           throw new Error("Repo URL not specified in the query parameters.");
         }
 
-        const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-repo-structure/?repo_url=${repoUrl}`;
+        const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-repo-structure/?repo_url=${repoUrl}`
 
         // Fetch the data from the repo URL
         const response = await fetch(url);
@@ -196,12 +151,12 @@ export default function App() {
         }
 
         const data = await response.json();
-        data.forEach((element) => {
-          if (element.type === "dir") {
-            element["children"] = [];
+        data.forEach(element => {
+          if (element.type === 'dir') {
+            element['children'] = []
           }
         });
-
+        
         setRootStructure(data);
       } catch (error) {
         setError(error.message);
@@ -214,8 +169,8 @@ export default function App() {
   }, []);
 
   const handleEditorChange = (text) => {
-    console.log(JSON.stringify(text));
-  };
+    console.log(JSON.stringify(text))
+  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -266,7 +221,7 @@ export default function App() {
 
 
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "gray" }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: "gray" }}>
       <div style={{ flex: 1 }}>
         <FolderStructure structure={rootStructure} onFileClick={fetchFile}/>
       </div>
