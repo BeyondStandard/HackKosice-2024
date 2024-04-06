@@ -1,0 +1,26 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "Televate"
+version = "0.1.0"
+description = "A tool for refactoring legacy code"
+authors = [
+    "Mantas Kandratavičius <ge25ban@tum.de>",
+    "Justus Beck <justus.beck@campus.lmu.de>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11.0"
+tqdm = "^4.66.2"
+langchain = "^0.1.14"
+
+[tool.mypy]
+python_version = "3.11"
+warn_redundant_casts = "True"
+warn_unused_ignores = "True"
+warn_return_any = "True"
+warn_unused_configs = "True"
+warn_unreachable = "True"
