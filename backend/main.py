@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import requests
 from typing import List
 import os
+from pydantic import BaseModel
 
 
 app = FastAPI()
@@ -14,6 +15,9 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
+
+class CodeRequest(BaseModel):
+    old_code: str
 
 
 def get_github_token_header():
@@ -132,7 +136,7 @@ async def get_new_code(old_code: str):
                     
         """
 
-    print(long_code)
+    return long_code
 
 
 
