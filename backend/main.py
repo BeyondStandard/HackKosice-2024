@@ -71,8 +71,8 @@ async def get_repo_structure(repo_url: str):
     if response.status_code == 200:
         repo_structure = response.json()
         # Filter out only relevant information to minimize bandwidth and processing
-        simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
-        return simplified_structure
+        # simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
+        return repo_structure
     else:
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
 
