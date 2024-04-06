@@ -4,69 +4,6 @@ import { DiffEditor } from '@monaco-editor/react';
 import Editor from '@monaco-editor/react';
 import React, { useState, useEffect } from 'react';
 
-// let treeStructure = {
-//   "name": "project",
-//   "type": "folder",
-//   "children": [
-//     {
-//       "name": "docs",
-//       "type": "folder",
-//       "children": [
-//         {
-//           "name": "index.md",
-//           "type": "file"
-//         },
-//         {
-//           "name": "installation.md",
-//           "type": "file"
-//         }
-//       ]
-//     },
-//     {
-//       "name": "src",
-//       "type": "folder",
-//       "children": [
-//         {
-//           "name": "main.py",
-//           "type": "file"
-//         },
-//         {
-//           "name": "utils",
-//           "type": "folder",
-//           "children": [
-//             {
-//               "name": "helper.py",
-//               "type": "file"
-//             }
-//           ]
-//         }
-//       ]
-//     },
-//     {
-//       "name": "tests",
-//       "type": "folder",
-//       "children": [
-//         {
-//           "name": "test_main.py",
-//           "type": "file"
-//         },
-//         {
-//           "name": "test_utils.py",
-//           "type": "file"
-//         }
-//       ]
-//     }
-//   ]
-// };
-
-// Mocked root structure
-const rootStructure = [
-  { "name": ".github", "path": ".github", "type": "dir" },
-  { "name": ".gitignore", "path": ".gitignore", "type": "file" },
-  { "name": "scripts", "path": "scripts", "type": "dir" },
-  { "name": "docs", "path": "docs", "type": "dir" },
-];
-
 // Mock function to simulate fetching directory contents
 const fetchDirectoryContents = async (path) => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -92,6 +29,7 @@ export default function App() {
   const [rootStructure, setRootStructure] = useState([]);
 
   const fetchFile = async (fileName: string) => {
+    console.log({fileName})
     const queryParams = new URLSearchParams(window.location.search);
     const repoUrl = queryParams.get('repo_url');
     const fileUrl = `https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=${repoUrl}&file_path=${fileName}`
@@ -110,39 +48,40 @@ export default function App() {
     }
   }
   
-  const Item = ({ name, path, type, fetchContents }) => {
-    
-    const [isOpen, setIsOpen] = useState(false);
-    const [contents, setContents] = useState([]);
-  
-    const handleClick = async () => {
-        if (type === 'dir') {
-            if (!isOpen) {
-                const fetchedContents = await fetchContents(path);
-                setContents(fetchedContents);
-            }
-            setIsOpen(!isOpen);
-        }
-    };
-  
-    return (
-        <div>
-            <div onClick={handleClick} style={{ cursor: type === 'dir' ? 'pointer' : 'default' }}>
-                {name} {type === 'dir' ? isOpen ? '(-)' : '(+)' : ''}
-            </div>
-            {isOpen && type === 'dir' && (
-                <div style={{ marginLeft: '20px' }}>
-                    {contents.length > 0 ? (
-                        contents.map(item => (
-                            <Item key={item.path} {...item} fetchContents={fetchContents} />
-                        ))
-                    ) : (
-                        <div>No items found</div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
+  const Item = ({ name, path, type, fetchContents, onFileClick }) => {
+      const [isOpen, setIsOpen] = useState(false);
+      const [contents, setContents] = useState([]);
+
+      const handleClick = async () => {
+          if (type === 'dir') {
+              if (!isOpen) {
+                  const fetchedContents = await fetchContents(path);
+                  setContents(fetchedContents);
+              }
+              setIsOpen(!isOpen);
+          } else if (type === 'file') {
+              onFileClick(path); // Execute the passed function for files
+          }
+      };
+
+      return (
+          <div>
+              <div onClick={handleClick} style={{ cursor: 'pointer' }}>
+                  {name} {type === 'dir' ? isOpen ? '(-)' : '(+)' : ''}
+              </div>
+              {isOpen && type === 'dir' && (
+                  <div style={{ marginLeft: '20px' }}>
+                      {contents.length > 0 ? (
+                          contents.map(item => (
+                              <Item key={item.path} {...item} fetchContents={fetchContents} onFileClick={onFileClick} />
+                          ))
+                      ) : (
+                          <div>No items found</div>
+                      )}
+                  </div>
+              )}
+          </div>
+      );
   };
   
   const Folder = ({ name, path, fetchContents }) => {
@@ -179,55 +118,16 @@ export default function App() {
     );
   };
   
-  const FolderStructure = ({ structure }) => {
-    return (
-        <div>
-            {structure.map(item => (
-                <Item key={item.path} {...item} fetchContents={fetchDirectoryContents} />
-            ))}
-        </div>
-    );
-  };
-
-  const FileTree = ({ node }) => {
-    console.log('meow', {node})
-    if (node.type === "dir") {
+  const FolderStructure = ({ structure, onFileClick }) => {
       return (
-        <div>
-          <strong>{node.name}/</strong>
-          <div style={{ paddingLeft: "20px" }}>
-            {node['children'].map((child, index) => (
-              <div onClick={() => fetchDirectory(child)}>
-                <FileTree key={index} node={child} />
-              </div>
-            ))}
+          <div>
+              {structure.map(item => (
+                  <Item key={item.path} {...item} fetchContents={fetchDirectoryContents} onFileClick={onFileClick} />
+              ))}
           </div>
-        </div>
       );
-    } else {
-      return <div onClick={() => fetchFile(node.name)}>{node.name} file</div>;
-    }
   };
 
-  
-  // const FileTree = ({ files }) => {
-  //   return (
-  //     <div>
-  //       {files.map((file, index) => (
-  //         <div onClick={() => fetchFile(file.name)}>
-  //       {file.name}
-  //       {file.type === 'dir' && (
-  //         <button onClick={(e) => {
-  //           e.stopPropagation(); // Prevent triggering the div's onClick
-  //           // Handle button click action here
-  //           console.log(`Button for ${file.name} clicked`);
-  //         }}>Button</button>
-  //       )}
-  //           </div>
-  //       ))}
-  //     </div>
-  //   )
-  // };
   useEffect(() => {
     // Function to fetch repo data
     const fetchRepoData = async () => {
@@ -281,8 +181,7 @@ export default function App() {
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: "gray" }}>
       <div style={{ flex: 1 }}>
-        <FolderStructure structure={rootStructure}/>
-        {/* <FileTree node={repoStrucutre} /> */}
+        <FolderStructure structure={rootStructure} onFileClick={fetchFile}/>
       </div>
       <div style={{ flex: 4 }}>
         {/* <DiffEditor height="100vh" width="100%" original="// some comment" modified="// some comment \r\n ahoj\\" /> */}
