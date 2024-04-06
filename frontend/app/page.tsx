@@ -14,7 +14,7 @@ export default function Home() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop&file_path=main.py', {
+      const response = await fetch('https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop&file_path=main.py', {
         method: 'GET',
       });
 
