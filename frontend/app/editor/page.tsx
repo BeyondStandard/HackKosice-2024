@@ -15,6 +15,12 @@ function createFileTree(files) {
   return fileSystem;
 }
 
+const LanguageButtonSC = styled.div<{ color: string }>`
+  height: 70px;
+  width: 70px;
+  ${(props) => props.color && "background-color:" + props.color};
+`;
+
 const FileTreeContainerSC = styled.div`
   margin: 5px;
   padding-left: 5px;
@@ -73,6 +79,7 @@ const OverviewContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding-left: 5px;
+  width: 1100px;
 `;
 const OverviewTitleSC = styled.div`
   display: flex;
@@ -92,6 +99,11 @@ const OverviewSC = styled.div`
   overflow: auto;
   max-height: 200px;
 `;
+const ButtonsContainerSC = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+`;
 
 export default function App() {
   // 'https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py'
@@ -103,7 +115,7 @@ export default function App() {
   const [useDiffEditor, setUseDiffEditor] = useState(false);
   const [diffEditorModified, setDiffEditorModified] = useState("");
   const [explanation, setExplanation] = useState("");
-  const [activeSection, setActiveSection] = useState(null);
+  const [activeSection, setActiveSection] = useState("overview");
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState("");
 
@@ -178,19 +190,19 @@ export default function App() {
     return <div>Error: {error}</div>;
   }
 
-  const compileOnClick = async () => {
+  const compileOnClick = async (language: string) => {
     if (!selectedFile) {
-      alert("No file selected")
-      return
+      alert("No file selected");
+      return;
     }
     const queryParams = new URLSearchParams(window.location.search);
     const repoUrl = queryParams.get("repo_url");
     if (!repoUrl) {
       throw new Error("Repo URL not specified in the query parameters.");
-    }   
-    let url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/?repo_url=${repoUrl}&file_path=${selectedFile}`;
+    }
+    let url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/?repo_url=${repoUrl}&file_path=${selectedFile}&lang=${language}`;
     let response = await fetch(url, {
-      method: "POST"
+      method: "POST",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -198,7 +210,7 @@ export default function App() {
 
     let data = await response.json();
     setUseDiffEditor(true);
-    setDiffEditorModified(data['result']);
+    setDiffEditorModified(data["result"]);
   };
 
   const getDescription = async (url: string) => {
@@ -210,8 +222,8 @@ export default function App() {
     }
 
     const data = await response.json();
-    setDescription(data['result'])
-  }
+    setDescription(data["result"]);
+  };
 
   return (
     <div
@@ -244,16 +256,15 @@ export default function App() {
             display: "flex",
           }}
         >
-          <Button color="success" onClick={compileOnClick}>
-            Compile
-          </Button>
           <SectionsContainer>
             <SectionTitle
               isActive={activeSection === "overview"}
               onClick={() => {
                 setActiveSection("overview");
-                setDescription("")
-                getDescription(`https://televate-1fb46ecbb8ff.herokuapp.com/new-description/?file_path=${selectedFile}`)
+                setDescription("");
+                getDescription(
+                  `https://televate-1fb46ecbb8ff.herokuapp.com/new-description/?file_path=${selectedFile}`
+                );
               }}
             >
               overview
@@ -262,8 +273,10 @@ export default function App() {
               isActive={activeSection === "testing"}
               onClick={() => {
                 setActiveSection("testing");
-                setDescription("")
-                getDescription(`https://televate-1fb46ecbb8ff.herokuapp.com/new-test/?file_path=${selectedFile}`)
+                setDescription("");
+                getDescription(
+                  `https://televate-1fb46ecbb8ff.herokuapp.com/new-test/?file_path=${selectedFile}`
+                );
               }}
             >
               testing
@@ -271,12 +284,33 @@ export default function App() {
           </SectionsContainer>
           <OverviewContainer>
             <OverviewTitleSC>
-              {/* {activeSection === "overview" ? "Overview" : "Testing"} */}
+              {activeSection === "overview" ? "Overview" : "Testing"}
             </OverviewTitleSC>
-            <OverviewSC style={{ width: '100%' }}>
-              {description}
-            </OverviewSC>
+            <OverviewSC style={{ width: "100%" }}>{description}</OverviewSC>
           </OverviewContainer>
+          <ButtonsContainerSC>
+            <LanguageButtonSC
+              onClick={() => {
+                compileOnClick("Python");
+              }}
+            >
+              <img src="/files/python.png" width={60} height={60} />
+            </LanguageButtonSC>
+            <LanguageButtonSC
+              onClick={() => {
+                compileOnClick("Java");
+              }}
+            >
+              <img src="/files/java.png" width={60} height={60} />
+            </LanguageButtonSC>
+            <LanguageButtonSC
+              onClick={() => {
+                compileOnClick("C++");
+              }}
+            >
+              <img src="/files/cpp.png" width={60} height={60} />
+            </LanguageButtonSC>
+          </ButtonsContainerSC>
           <div></div>
         </div>
       </div>
