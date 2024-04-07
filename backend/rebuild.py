@@ -4,14 +4,19 @@ from langchain_openai import OpenAIEmbeddings
 
 import dotenv
 import os
+import sys
 
-import data
+import databackend
 
 # Load environment variables
 dotenv.load_dotenv()
 
 if __name__ == "__main__":
-    data = data.Data()
+
+    if len(sys.argv) <= 1:
+        raise ValueError("No arguments were provided. Please pass at least one argument.")
+
+    data = databackend.Data(repo_path=sys.argv[1])
     data.load_from_pickle()
 
     documents = []
@@ -22,7 +27,7 @@ if __name__ == "__main__":
     documents.extend(text_splitter.split_documents(data.data))
     vectordb = Chroma.from_documents(
         documents,
-        persist_directory="data/vectordb",
-        embedding=OpenAIEmbeddings(model=os.environ["embeddingModel"]),
+        persist_directory="../data/vectordb",
+        embedding=OpenAIEmbeddings(model="text-embedding-3-small"),
     )
     vectordb.persist()

@@ -5,7 +5,7 @@ from typing import List
 import os
 from pydantic import BaseModel
 import time
-from tokenizer import data
+import databackend
 import query
 import asyncio
 
@@ -100,8 +100,11 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
 @app.post("/new-code/")
 async def get_new_code(code: Code):
-    d = data.Data("justusjb/TicTacTOBOL")
-    d.load_from_repository()
+
+    repo_path="justusjb/TicTacTOBOL"
+
+    data = databackend.Data(repo_path=repo_path)
+    data.load_from_repository()
 
     res = await query.get_response()
     return res

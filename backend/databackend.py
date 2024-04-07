@@ -19,7 +19,6 @@ from langchain_community.document_loaders.blob_loaders import Blob
 from langchain_core.documents.base import Document
 from langchain_text_splitters import Language
 
-
 import pickle
 import typing
 import tqdm
@@ -81,6 +80,7 @@ class TqdmFileWrapper:
     # Add any other methods from the file object you might need
     def close(self):
         self._file.close()
+
 
 
 class CustomParser(LanguageParser):
@@ -146,8 +146,8 @@ class CustomParser(LanguageParser):
 
 
 class Data:
-    PICKLE_PATH: typing.Final[str] = "data/data.pickle"
-    REP_PATH: typing.Final[str] = f"repositories/{os.getenv('repository')}"
+    PICKLE_PATH: typing.Final[str] = "../data/data.pickle"
+    #REP_PATH: typing.Final[str] = None
     BINARY_EXCLUDES: typing.Final[typing.Sequence[str]] = (
         "*.gif",
         "*.png",
@@ -161,8 +161,9 @@ class Data:
         "*.rar",
     )
 
-    def __init__(self) -> None:
+    def __init__(self, repo_path) -> None:
         self.data = None
+        self.REP_PATH = '../repositories/' + repo_path.split('/')[-1]
 
     @property
     def data(self) -> typing.List[Document]:
@@ -174,11 +175,11 @@ class Data:
 
     def load_from_repository(self) -> None:
         loader = GenericLoader.from_filesystem(
-            Data.REP_PATH,
+            self.REP_PATH,
             glob="*",
             # exclude=Data.BINARY_EXCLUDES,
             suffixes=[".cbl"],
-            parser=CustomParser(language=Language.COBOL),
+            parser=LanguageParser(language=Language.COBOL),
         )
 
         self.data = loader.load()
@@ -193,7 +194,8 @@ class Data:
             self.data = pickle.load(wrapped_file)
 
     def export_data(self):
-        os.makedirs("data", exist_ok=True)
+        # Create the data directory if it doesn't exist
+        os.makedirs("../data", exist_ok=True)
 
         with open(Data.PICKLE_PATH, "wb") as f:
             pickle.dump(self.data, f)
