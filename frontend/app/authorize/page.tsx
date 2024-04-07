@@ -15,7 +15,7 @@ export default function Auth() {
 
     if (codeParam && localStorage.getItem("accessToken") === null) {
       async function getAccessToken() {
-        await fetch("http://localhost:4000/getAccessToken?code=" + codeParam, {
+        await fetch("/getAccessToken?code=" + codeParam, {
           method: "GET",
         })
           .then((response) => {
@@ -34,7 +34,7 @@ export default function Auth() {
   }
 
   async function getUserData() {
-    await fetch("http://localhost:4000/getUserData", {
+    await fetch("/getUserData", {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("accessToken"),

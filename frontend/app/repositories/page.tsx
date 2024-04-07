@@ -12,6 +12,7 @@ const TitleSC = styled.div`
   font-weight: 500;
   color: #c4c666;
   padding-left: 10px;
+  margin-top: 15px;
 `;
 
 const RepoContainerSC = styled.div`
