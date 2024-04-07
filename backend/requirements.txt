@@ -4,3 +4,12 @@ gunicorn
 requests
 starlette
 pydantic
+langchain_community
+asyncio
+uuid
+langchain
+langchain_openai
+langchain_text_splitters
+langchain_core
+tqdm
+python-dotenv

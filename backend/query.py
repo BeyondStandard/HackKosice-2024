@@ -1,7 +1,7 @@
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain_community.vectorstores import Chroma
 from langchain.prompts.prompt import PromptTemplate
-from langchain_openai import OpenAI, OpenAIEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 import asyncio
 import logging
@@ -14,6 +14,7 @@ import prompt_constants
 
 # Langchain environment variables
 dotenv.load_dotenv()
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = f"Tracing - {uuid.uuid4().hex[:8]}"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
 
@@ -45,15 +46,17 @@ class GPTChatter:
             input_variables=["context", "question"],
         )
         vectordb = Chroma(
-            persist_directory="data/vectordb",
+            persist_directory="../data/vectordb",
             embedding_function=OpenAIEmbeddings(
-                model=os.environ["embeddingModel"]),
+                model="text-embedding-3-small"),
         )
         r = vectordb.as_retriever(search_kwargs={"k": 10})
         self.qa_chain = RetrievalQA.from_chain_type(
-            llm=OpenAI(
+            llm=ChatOpenAI(
                 streaming=True,
                 temperature=0,
+                max_tokens=4096,
+                model="gpt-3.5-turbo-0125",
                 openai_api_key=os.environ["OPENAI_API_KEY"],
             ),
             retriever=r,
@@ -82,6 +85,12 @@ class GPTChatter:
     async def response(self):
         async for item in self._response():
             yield item
+
+
+async def get_response(query="Rewrite identically in Python"):
+    chatter2 = GPTChatter()
+    response2 = await chatter2.ask(query)
+    return response2
 
 
 if __name__ == "__main__":
