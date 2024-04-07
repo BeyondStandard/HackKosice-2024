@@ -263,7 +263,7 @@ export default function App() {
               onClick={() => {
                 setActiveSection("testing");
                 setDescription("")
-                getDescription(`https://televate-1fb46ecbb8ff.herokuapp.com/new-description/?file_path=${selectedFile}`)
+                getDescription(`https://televate-1fb46ecbb8ff.herokuapp.com/new-test/?file_path=${selectedFile}`)
               }}
             >
               testing
