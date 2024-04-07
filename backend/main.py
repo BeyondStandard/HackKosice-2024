@@ -69,14 +69,14 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
     response = requests.get(raw_url, headers=get_github_token_header())
 
     print("Response status code: ", response.status_code)
-    print("Response content: ", response.content)
 
     if response.status_code == 200:
         # Return the file content
         # You might want to return the content type as well depending on the file
         return response.content
     else:
-        raise HTTPException(status_code=404, detail="File not found")
+        print("Error! Response content: ", response.content)
+        raise HTTPException(status_code=response.status_code, detail="File not found")
 
 
 @app.get("/get-repo-structure/")
@@ -88,7 +88,6 @@ async def get_repo_structure(repo_url: str):
 
     response = requests.get(api_url, headers=get_github_token_header())
     print("Response status code: ", response.status_code)
-    print("Response content: ", response.content)
     if response.status_code == 200:
         repo_structure = response.json()
         # Filter out only relevant information to minimize bandwidth and processing
@@ -102,6 +101,7 @@ async def get_repo_structure(repo_url: str):
                 repo_structure = response.json()
                 return repo_structure
         except:
+            print("Error! Response content: ", response.content)
             raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
 
 
@@ -112,12 +112,12 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
     response = requests.get(api_url, headers=get_github_token_header())
     print("Response status code: ", response.status_code)
-    print("Response content: ", response.content)
     if response.status_code == 200:
         directory_structure = response.json()
         directory_contents = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in directory_structure]
         return directory_contents
     else:
+        print("Error! Response content: ", response.content)
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch directory contents")
 
 
