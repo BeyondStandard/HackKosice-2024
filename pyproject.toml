@@ -19,6 +19,7 @@ langchain = "^0.1.14"
 langchain-openai = "^0.1.1"
 python-dotenv = "^1.0.1"
 chromadb = "^0.4.24"
+git-python = "^1.0.3"
 
 [tool.mypy]
 python_version = "3.11"

@@ -10,6 +10,7 @@ import query
 import asyncio
 import shutil
 from openai import OpenAI
+import prompt_constants
 
 app = FastAPI()
 
@@ -151,7 +152,10 @@ async def get_new_code(repo_url: str, file_path: str):
     # rebuild
     await run_rebuild_script(repo_url)
 
-    res = await query.get_response(f"Rewrite the file {file_path} identically in Python")
+    res = await query.get_response(
+        f"Rewrite the file {file_path} identically in Python",
+        prompt_constants.PROMPT_TEMPLATE_EN
+    )
     return res
 
 
