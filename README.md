@@ -4,7 +4,7 @@ At Hack Kosice 2024, drawing inspiration from Deutsche Telekom—one of the even
 
 Fuelled by this realization, we swiftly aligned on our project's objectives and were able to implement our key features with remarkable speed:
 
-![Foundation](https://imgur.com/EUl85pA.png)
+![Foundation](https://imgur.com/urtEo3W.png)
 
 While we were pleased with these accomplishments, the real triumph was how we built upon this solid foundation to achieve something truly groundbreaking:
 
