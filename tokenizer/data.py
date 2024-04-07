@@ -147,7 +147,6 @@ class CustomParser(LanguageParser):
 
 class Data:
     PICKLE_PATH: typing.Final[str] = "data/data.pickle"
-    REP_PATH: typing.Final[str] = f"repositories/{os.getenv('repository')}"
     BINARY_EXCLUDES: typing.Final[typing.Sequence[str]] = (
         "*.gif",
         "*.png",
@@ -161,7 +160,10 @@ class Data:
         "*.rar",
     )
 
-    def __init__(self) -> None:
+    def __init__(self, repository: str) -> None:
+        repository_name = repository.split('/')[-1]
+        self.repository_path = f"../repositories/{repository_name}"
+
         self.data = None
 
     @property
@@ -174,7 +176,7 @@ class Data:
 
     def load_from_repository(self) -> None:
         loader = GenericLoader.from_filesystem(
-            Data.REP_PATH,
+            self.repository_path,
             glob="*",
             # exclude=Data.BINARY_EXCLUDES,
             suffixes=[".cbl"],
@@ -193,7 +195,7 @@ class Data:
             self.data = pickle.load(wrapped_file)
 
     def export_data(self):
-        os.makedirs("data", exist_ok=True)
+        os.makedirs("../data", exist_ok=True)
 
         with open(Data.PICKLE_PATH, "wb") as f:
             pickle.dump(self.data, f)

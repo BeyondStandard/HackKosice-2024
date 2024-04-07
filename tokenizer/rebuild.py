@@ -3,6 +3,7 @@ from langchain_text_splitters import CharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 
 import dotenv
+import sys
 import os
 
 import data
@@ -11,7 +12,7 @@ import data
 dotenv.load_dotenv()
 
 if __name__ == "__main__":
-    data = data.Data()
+    data = data.Data(sys.argv[1])
     data.load_from_pickle()
 
     documents = []
@@ -22,7 +23,7 @@ if __name__ == "__main__":
     documents.extend(text_splitter.split_documents(data.data))
     vectordb = Chroma.from_documents(
         documents,
-        persist_directory="data/vectordb",
+        persist_directory="../data/vectordb",
         embedding=OpenAIEmbeddings(model=os.environ["embeddingModel"]),
     )
     vectordb.persist()
