@@ -8,6 +8,7 @@ import time
 import databackend
 import query
 import asyncio
+import shutil
 
 app = FastAPI()
 
@@ -30,6 +31,22 @@ def get_github_token_header():
         "Authorization": f"Bearer {github_token}",
     }
     return headers
+
+
+async def run_rebuild_script(repo_path):
+    process = await asyncio.create_subprocess_shell(
+        f"python3 rebuild.py {repo_path}",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+
+    stdout, stderr = await process.communicate()  # Wait for the process to finish
+
+    if stderr:
+        print(f"Errors: {stderr.decode()}")
+
+    print(f"Output: {stdout.decode()}")
+
 
 @app.get("/")
 async def root():
@@ -66,7 +83,7 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
 async def get_repo_structure(repo_url: str):
     # Construct the GitHub API URL for getting repo contents
     # Adjust based on the structure of 'repo_url' you expect
-    # api_url = f"https://api.github.com/repos/{repo_url}/contents/"
+    #api_url = f"https://api.github.com/repos/{repo_url}/contents/"
     api_url = f"https://api.github.com/repos/{repo_url}/git/trees/main?recursive=1"
 
     response = requests.get(api_url, headers=get_github_token_header())
@@ -78,7 +95,14 @@ async def get_repo_structure(repo_url: str):
         # simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
         return repo_structure
     else:
-        raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
+        try:
+            api_url = f"https://api.github.com/repos/{repo_url}/git/trees/master?recursive=1"
+            response = requests.get(api_url, headers=get_github_token_header())
+            if response.status_code == 200:
+                repo_structure = response.json()
+                return repo_structure
+        except:
+            raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
 
 
 @app.get("/get-directory-contents/")
@@ -99,15 +123,28 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
 
 @app.post("/new-code/")
-async def get_new_code(code: Code):
+async def get_new_code(repo_url: str, file_path: str):
 
-    repo_path="justusjb/TicTacTOBOL"
+    #repo_url="Jorengarenar/cobBF"
 
-    data = databackend.Data(repo_path=repo_path)
+    data = databackend.Data(repo_path=repo_url)
+    data.clone_repository()
     data.load_from_repository()
 
-    res = await query.get_response()
+    # delete data
+    shutil.rmtree("../data")
+
+    # export data
+    data.export_data()
+
+    # rebuild
+    await run_rebuild_script(repo_url)
+
+    res = await query.get_response(f"Rewrite the file {file_path} identically in Python")
     return res
+
+
+
 
 
 def lelelel():

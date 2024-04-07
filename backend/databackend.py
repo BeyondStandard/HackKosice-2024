@@ -19,6 +19,7 @@ from langchain_community.document_loaders.blob_loaders import Blob
 from langchain_core.documents.base import Document
 from langchain_text_splitters import Language
 
+from git import Repo
 import pickle
 import typing
 import tqdm
@@ -164,6 +165,7 @@ class Data:
     def __init__(self, repo_path) -> None:
         self.data = None
         self.REP_PATH = '../repositories/' + repo_path.split('/')[-1]
+        self.whole_repo = repo_path
 
     @property
     def data(self) -> typing.List[Document]:
@@ -199,3 +201,9 @@ class Data:
 
         with open(Data.PICKLE_PATH, "wb") as f:
             pickle.dump(self.data, f)
+
+    def clone_repository(self):
+        # Checks if the repository already exists and clones it if necessary
+        if not os.path.exists(self.REP_PATH):
+            Repo.clone_from('https://github.com/' + self.whole_repo, self.REP_PATH)
+
