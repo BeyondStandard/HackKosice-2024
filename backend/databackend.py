@@ -180,7 +180,7 @@ class Data:
             self.REP_PATH,
             glob="*",
             # exclude=Data.BINARY_EXCLUDES,
-            suffixes=[".cbl"],
+            suffixes=[".cbl", ".cpp", ".py"],
             parser=LanguageParser(language=Language.COBOL),
         )
 
