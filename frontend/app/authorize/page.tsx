@@ -16,7 +16,7 @@ export default function Auth() {
     if (codeParam && localStorage.getItem("accessToken") === null) {
       async function getAccessToken() {
         await fetch(
-          "https://televate-1fb46ecbb8ff.herokuapp.com:5000/getAccessToken?code=" +
+          "https://televate-1fb46ecbb8ff.herokuapp.com/getAccessToken?code=" +
             codeParam,
           {
             method: "GET",
@@ -38,15 +38,12 @@ export default function Auth() {
   }
 
   async function getUserData() {
-    await fetch(
-      "https://televate-1fb46ecbb8ff.herokuapp.com:5000/getUserData",
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("accessToken"),
-        },
-      }
-    )
+    await fetch("https://televate-1fb46ecbb8ff.herokuapp.com/getUserData", {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("accessToken"),
+      },
+    })
       .then((response) => {
         return response.json();
       })
