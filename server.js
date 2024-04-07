@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.get(
-  "https://televateyourcodewith.us:5000/getAccessToken",
+  "https://televate-1fb46ecbb8ff.herokuapp.com:5000/getAccessToken",
   async function (req, res) {
     const params =
       "?client_id=" +
@@ -41,7 +41,7 @@ app.get(
 );
 
 app.get(
-  "https://televateyourcodewith.us:5000/getUserData",
+  "https://televate-1fb46ecbb8ff.herokuapp.com:5000/getUserData",
   async function (req, res) {
     req.get("Authorization"); //bearer access token
     await fetch("https://api.github.com/user", {
