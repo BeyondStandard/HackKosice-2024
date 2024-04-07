@@ -135,7 +135,7 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
 
 @app.post("/new-code/")
-async def get_new_code(repo_url: str, file_path: str):
+async def get_new_code(repo_url: str, file_path: str, lang: str = "Python"):
 
     #repo_url="Jorengarenar/cobBF"
 
@@ -156,7 +156,7 @@ async def get_new_code(repo_url: str, file_path: str):
     await run_rebuild_script(repo_url)
 
     res = await query.get_response(
-        f"Rewrite the file {file_path} identically in Python",
+        f"Rewrite the file {file_path} identically in {lang}",
         prompt_constants.PROMPT_TEMPLATE_EN_TRANSLATE
     )
     return res
