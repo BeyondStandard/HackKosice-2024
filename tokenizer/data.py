@@ -115,6 +115,7 @@ class CustomParser(LanguageParser):
             )
             return
 
+        # noinspection PyAttributeOutsideInit
         self.Segmenter = LANGUAGE_SEGMENTERS[language]
         segmenter = self.Segmenter(blob.as_string())
         if not segmenter.is_valid():
@@ -181,6 +182,7 @@ class Data:
         )
 
         self.data = loader.load()
+
     def load_from_pickle(self, file_path=PICKLE_PATH):
         file_size = os.path.getsize(file_path)
         with (

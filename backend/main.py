@@ -105,29 +105,9 @@ async def get_new_code(code: Code):
 
     data = databackend.Data(repo_path=repo_path)
     data.load_from_repository()
-    data.export_data()
-
-    await run_rebuild_script(repo_path)
 
     res = await query.get_response()
     return res
-
-
-async def run_rebuild_script(repo_path):
-    process = await asyncio.create_subprocess_shell(
-        f"python3 rebuild.py {repo_path}",
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE
-    )
-
-    stdout, stderr = await process.communicate()  # Wait for the process to finish
-
-    if stderr:
-        print(f"Errors: {stderr.decode()}")
-
-    print(f"Output: {stdout.decode()}")
-
-
 
 
 def lelelel():

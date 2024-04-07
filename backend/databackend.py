@@ -67,7 +67,6 @@ class Data:
         )
 
         self.data = loader.load()
-        print(len(self.data))
 
     def load_from_pickle(self, file_path=PICKLE_PATH):
         file_size = os.path.getsize(file_path)

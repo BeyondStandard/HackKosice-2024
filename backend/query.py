@@ -14,6 +14,7 @@ import prompt_constants
 
 # Langchain environment variables
 dotenv.load_dotenv()
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = f"Tracing - {uuid.uuid4().hex[:8]}"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
 
