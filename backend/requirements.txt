@@ -15,3 +15,4 @@ tqdm
 python-dotenv
 gitpython
 openai
+chromadb
