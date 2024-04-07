@@ -14,3 +14,4 @@ langchain_core
 tqdm
 python-dotenv
 gitpython
+openai
