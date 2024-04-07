@@ -13,12 +13,12 @@ from langchain_community.document_loaders.parsers.language.cpp import CPPSegment
 from langchain_community.document_loaders.parsers.language.lua import LuaSegmenter
 from langchain_community.document_loaders.parsers.language.go import GoSegmenter
 from langchain_community.document_loaders.parsers.language.c import CSegmenter
+from langchain_community.document_loaders.parsers import LanguageParser
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.blob_loaders import Blob
 from langchain_core.documents.base import Document
 from langchain_text_splitters import Language
 
-from langchain_community.document_loaders.parsers import LanguageParser
 
 import pickle
 import typing
