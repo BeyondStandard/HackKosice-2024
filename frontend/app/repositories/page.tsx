@@ -26,8 +26,9 @@ const RepoContainerSC = styled.div`
   background-color: #232123;
   border-radius: 8px;
   &:hover {
-    background-color: rgba(228, 7, 100, 0.5);
+    background-color: rgba(228, 7, 100, 0.4);
   }
+  cursor: pointer;
 `;
 export default function Repositories() {
   const [repositories, setRepositories] = useState([]);
