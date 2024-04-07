@@ -1,3 +1,5 @@
+![HackKosice 2024](https://raw.githubusercontent.com/hackkosice/i-demoed-hk24/main/.template_images/Top.png)
+
 _In a digital world where yesterday's code quickly becomes obsolete, our new platform offers a lifeline. We rejuvenate outdated codebases, transforming them into sleek, maintainable masterpieces. Join us in giving forgotten code a second life, paving the way for tomorrow's innovations._
 
 At Hack Kosice 2024, drawing inspiration from Deutsche Telekom—one of the event's sponsors—my team and I ventured into the complex realm of legacy code maintenance. We recognized that while individual developers might find their own code challenging to maintain after just a year, the giants of the IT world are wrestling with codebases that are several decades old, created by professionals who have long since retired.
