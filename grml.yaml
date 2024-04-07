@@ -45,7 +45,7 @@ commands:
                     source .venv/bin/activate
                     python3 tokenizer/pickle_data.py
 
-            rebuild:
+            build:
                 help: rebuild the tokenizer
                 exec: |
                     source .venv/bin/activate

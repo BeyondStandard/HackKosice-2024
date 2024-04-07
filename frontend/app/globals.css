@@ -32,7 +32,14 @@ body {
   }
 } */
 
-.lines-content {
-  background-color: red;
-  color: green;
+.margin-view-overlays {
+  background-color: #2f2833;
+}
+.monaco-editor,
+.margin-view-overlays,
+.line-numbers {
+  color: #8b8b8b !important;
+}
+.view-line {
+  background-color: #232123;
 }

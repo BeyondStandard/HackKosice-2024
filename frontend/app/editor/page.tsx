@@ -1,5 +1,4 @@
 "use client";
-"use-client";
 import "../globals.css";
 import { DiffEditor } from "@monaco-editor/react";
 import Editor from "@monaco-editor/react";
@@ -8,26 +7,16 @@ import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
 import styled from "styled-components";
 
-const StyledEditor = styled(DiffEditor)`
-  background-color: #232123;
-  color: red;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 14px;
-  line-height: 1.5;
-`;
-
-// Mock function to simulate fetching directory contents
-const fetchDirectoryContents = async (path) => {
-  const queryParams = new URLSearchParams(window.location.search);
-  const repoUrl = queryParams.get("repo_url");
-  const url = `https://televate-1fb46ecbb8ff.herokuapp.com/get-directory-contents/?repo_url=${repoUrl}&dir_path=${path}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
-};
+function createFileTree(files) {
+  const fileSystem = [];
+  files.forEach((element) => {
+    if (element.type === "blob") {
+      fileSystem.push(element);
+    }
+  });
+  console.log(fileSystem);
+  return fileSystem;
+}
 
 export default function App() {
   // 'https://televate-1fb46ecbb8ff.herokuapp.com/get-file/?repo_url=justusjb/streamlit_workshop/main&file_path=main.py'
@@ -60,100 +49,6 @@ export default function App() {
     }
   };
 
-  const Item = ({ name, path, type, fetchContents, onFileClick }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [contents, setContents] = useState([]);
-
-    const handleClick = async () => {
-      if (type === "dir") {
-        if (!isOpen) {
-          const fetchedContents = await fetchContents(path);
-          setContents(fetchedContents);
-        }
-        setIsOpen(!isOpen);
-      } else if (type === "file") {
-        onFileClick(path); // Execute the passed function for files
-      }
-    };
-
-    return (
-      <div>
-        <div onClick={handleClick} style={{ cursor: "pointer" }}>
-          {name} {type === "dir" ? (isOpen ? "(-)" : "(+)") : ""}
-        </div>
-        {isOpen && type === "dir" && (
-          <div style={{ marginLeft: "20px" }}>
-            {contents.length > 0 ? (
-              contents.map((item) => (
-                <Item
-                  key={item.path}
-                  {...item}
-                  fetchContents={fetchContents}
-                  onFileClick={onFileClick}
-                />
-              ))
-            ) : (
-              <div>No items found</div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const Folder = ({ name, path, fetchContents }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [contents, setContents] = useState([]);
-
-    const toggleFolder = async () => {
-      if (!isOpen) {
-        const fetchedContents = await fetchContents(path);
-        setContents(fetchedContents);
-      }
-      setIsOpen(!isOpen);
-    };
-
-    return (
-      <div>
-        <div onClick={toggleFolder} style={{ cursor: "pointer" }}>
-          {name} {isOpen ? "(-)" : "(+)"}
-        </div>
-        {isOpen && (
-          <div style={{ marginLeft: "20px" }}>
-            {contents.map((item) => (
-              <div key={item.path}>
-                {item.type === "dir" ? (
-                  <Folder
-                    name={item.name}
-                    path={item.path}
-                    fetchContents={fetchContents}
-                  />
-                ) : (
-                  <div>{item.name}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const FolderStructure = ({ structure, onFileClick }) => {
-    return (
-      <div>
-        {structure.map((item) => (
-          <Item
-            key={item.path}
-            {...item}
-            fetchContents={fetchDirectoryContents}
-            onFileClick={onFileClick}
-          />
-        ))}
-      </div>
-    );
-  };
-
   useEffect(() => {
     // Function to fetch repo data
     const fetchRepoData = async () => {
@@ -174,13 +69,8 @@ export default function App() {
         }
 
         const data = await response.json();
-        data.forEach((element) => {
-          if (element.type === "dir") {
-            element["children"] = [];
-          }
-        });
-
-        setRootStructure(data);
+        createFileTree(data["tree"]);
+        setRootStructure(data["tree"]);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -190,10 +80,6 @@ export default function App() {
 
     fetchRepoData();
   }, []);
-
-  const handleEditorChange = (text) => {
-    console.log(JSON.stringify(text));
-  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -245,15 +131,15 @@ export default function App() {
   return (
     <div style={{ display: "flex", height: "100vh", backgroundColor: "gray" }}>
       <div style={{ flex: 1 }}>
-        <FolderStructure structure={rootStructure} onFileClick={fetchFile} />
+        {/* <FolderStructure structure={rootStructure} onFileClick={fetchFile}/> */}
       </div>
       <div style={{ flex: 4 }}>
-        <StyledEditor
+        <DiffEditor
           height="80vh"
           width="100%"
           original={editorValue}
           modified={diffEditorModified}
-          theme="dark"
+          theme={"vs"}
         />
         <div
           style={{ height: "20vh", backgroundColor: "black", color: "white" }}

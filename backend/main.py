@@ -62,7 +62,8 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
 async def get_repo_structure(repo_url: str):
     # Construct the GitHub API URL for getting repo contents
     # Adjust based on the structure of 'repo_url' you expect
-    api_url = f"https://api.github.com/repos/{repo_url}/contents/"
+    # api_url = f"https://api.github.com/repos/{repo_url}/contents/"
+    api_url = f"https://api.github.com/repos/{repo_url}/git/trees/main?recursive=1"
 
     response = requests.get(api_url, headers=get_github_token_header())
     print("Response status code: ", response.status_code)
@@ -70,8 +71,8 @@ async def get_repo_structure(repo_url: str):
     if response.status_code == 200:
         repo_structure = response.json()
         # Filter out only relevant information to minimize bandwidth and processing
-        simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
-        return simplified_structure
+        # simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
+        return repo_structure
     else:
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
 
