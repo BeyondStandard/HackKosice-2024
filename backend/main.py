@@ -103,7 +103,7 @@ async def get_new_code(code: Code):
 
     repo_path="justusjb/TicTacTOBOL"
 
-    data = data.Data(repo_path=repo_path)
+    data = databackend.Data(repo_path=repo_path)
     data.load_from_repository()
 
     res = await query.get_response()
