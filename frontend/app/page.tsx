@@ -120,9 +120,14 @@ export default function Home() {
   };
 
   function loginWithGitHub() {
-    window.location.assign(
-      "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID
-    );
+    let user = prompt("Enter a username:")
+    if (!user) {
+      return
+    }
+    router.push("/repositories?user=" + user);
+    // window.location.assign(
+    //   "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID
+    // );
   }
   return (
     <MainContainer>

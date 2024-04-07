@@ -10,6 +10,7 @@ import query
 import asyncio
 import shutil
 from openai import OpenAI
+import prompt_constants
 
 app = FastAPI()
 
@@ -151,25 +152,29 @@ async def get_new_code(repo_url: str, file_path: str):
     # rebuild
     await run_rebuild_script(repo_url)
 
-    res = await query.get_response(f"Rewrite the file {file_path} identically in Python")
+    res = await query.get_response(
+        f"Rewrite the file {file_path} identically in Python",
+        prompt_constants.PROMPT_TEMPLATE_EN_TRANSLATE
+    )
     return res
 
 
+@app.post("/new-test/")
+async def get_new_test(file_path: str):
 
-@app.post("/code-description/")
-async def code_description(code: Code):
-    client = OpenAI()
-
-    code_desc = client.chat.completions.create(
-        model="gpt-3.5-turbo-0125",
-        messages=[
-            {"role": "system",
-             "content": "You are a code describing tool. You get code and you have to explain what is going on in the code."},
-            {"role": "user", "content": code.old_code}
-        ]
+    res = await query.get_response(
+        f"Create test cases for the file {file_path}",
+        prompt_constants.PROMPT_TEMPLATE_EN_TEST
     )
+    return res
 
 
-    return code_desc
+@app.post("/new-description/")
+async def get_new_description(file_path: str):
 
+    res = await query.get_response(
+        f"Describe the file {file_path}",
+        prompt_constants.PROMPT_TEMPLATE_EN_DESCRIBE
+    )
+    return res
 

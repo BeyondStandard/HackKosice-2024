@@ -38,11 +38,11 @@ logger.addHandler(file_handler)
 
 
 class GPTChatter:
-    def __init__(self):
+    def __init__(self, template):
         self.complete = None
 
         prompt = PromptTemplate(
-            template=prompt_constants.PROMPT_TEMPLATE_EN,
+            template=template,
             input_variables=["context", "question"],
         )
         vectordb = Chroma(
@@ -87,8 +87,8 @@ class GPTChatter:
             yield item
 
 
-async def get_response(query="Rewrite identically in Python"):
-    chatter2 = GPTChatter()
+async def get_response(query, template):
+    chatter2 = GPTChatter(template)
     response2 = await chatter2.ask(query)
     return response2
 
