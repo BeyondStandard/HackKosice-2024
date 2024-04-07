@@ -164,7 +164,7 @@ class Data:
 
     def __init__(self, repo_path) -> None:
         self.data = None
-        self.REP_PATH = '../repositories/' + repo_path.split('/')[-1]
+        self.REP_PATH = '../tmp/' + repo_path.split('/')[-1]
         self.whole_repo = repo_path
 
     @property
