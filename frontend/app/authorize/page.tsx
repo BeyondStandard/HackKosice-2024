@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button, Spinner } from "reactstrap";
 
 export default function Auth() {
   const [rerender, setRerender] = useState(false);
@@ -11,7 +12,6 @@ export default function Auth() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const codeParam = urlParams.get("code");
-    console.log(codeParam);
 
     if (codeParam && localStorage.getItem("accessToken") === null) {
       async function getAccessToken() {
@@ -33,6 +33,7 @@ export default function Auth() {
             }
           });
       }
+
       getAccessToken();
     }
   }
@@ -65,5 +66,18 @@ export default function Auth() {
       }
     });
   }, [userData.login]); // Add userData.login to the dependency array
-  return <div>xxx</div>;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh", // This makes sure the div takes full viewport height
+        backgroundColor: "#000", // Optional: in case you want to change the background color
+      }}
+    >
+      <Spinner color="light">
+        </Spinner>
+    </div>
+  );
 }
