@@ -147,7 +147,7 @@ class CustomParser(LanguageParser):
 
 
 class Data:
-    PICKLE_PATH: typing.Final[str] = "../data/data.pickle"
+    PICKLE_PATH: typing.Final[str] = "../tmp/data/data.pickle"
     #REP_PATH: typing.Final[str] = None
     BINARY_EXCLUDES: typing.Final[typing.Sequence[str]] = (
         "*.gif",
@@ -164,7 +164,7 @@ class Data:
 
     def __init__(self, repo_path) -> None:
         self.data = None
-        self.REP_PATH = '../tmp/' + repo_path.split('/')[-1]
+        self.REP_PATH = '../tmp/repositories' + repo_path.split('/')[-1]
         self.whole_repo = repo_path
 
     @property
@@ -197,7 +197,7 @@ class Data:
 
     def export_data(self):
         # Create the data directory if it doesn't exist
-        os.makedirs("../data", exist_ok=True)
+        os.makedirs("../tmp/data", exist_ok=True)
 
         with open(Data.PICKLE_PATH, "wb") as f:
             pickle.dump(self.data, f)

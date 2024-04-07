@@ -46,7 +46,7 @@ class GPTChatter:
             input_variables=["context", "question"],
         )
         vectordb = Chroma(
-            persist_directory="../data/vectordb",
+            persist_directory="../tmp/data/vectordb",
             embedding_function=OpenAIEmbeddings(
                 model="text-embedding-3-small"),
         )

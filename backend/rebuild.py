@@ -28,7 +28,7 @@ if __name__ == "__main__":
     print(documents)
     vectordb = Chroma.from_documents(
         documents,
-        persist_directory="../data/vectordb",
+        persist_directory="../tmp/data/vectordb",
         embedding=OpenAIEmbeddings(model="text-embedding-3-small"),
     )
     vectordb.persist()
