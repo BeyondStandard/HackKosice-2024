@@ -49,7 +49,6 @@ export default function Auth() {
         return response.json();
       })
       .then((data) => {
-        //console.log(data);
         setUserData(data);
       });
   }

@@ -1,10 +1,12 @@
+![HackKosice 2024](https://raw.githubusercontent.com/hackkosice/i-demoed-hk24/main/.template_images/Top.png)
+
 _In a digital world where yesterday's code quickly becomes obsolete, our new platform offers a lifeline. We rejuvenate outdated codebases, transforming them into sleek, maintainable masterpieces. Join us in giving forgotten code a second life, paving the way for tomorrow's innovations._
 
 At Hack Kosice 2024, drawing inspiration from Deutsche Telekom—one of the event's sponsors—my team and I ventured into the complex realm of legacy code maintenance. We recognized that while individual developers might find their own code challenging to maintain after just a year, the giants of the IT world are wrestling with codebases that are several decades old, created by professionals who have long since retired.
 
 Fuelled by this realization, we swiftly aligned on our project's objectives and were able to implement our key features with remarkable speed:
 
-![Foundation](https://imgur.com/VETZRdm.png)
+![Foundation](https://imgur.com/urtEo3W.png)
 
 While we were pleased with these accomplishments, the real triumph was how we built upon this solid foundation to achieve something truly groundbreaking:
 
@@ -27,9 +29,7 @@ Finally, we arrive at the cornerstone of our architecture—the hierarchy of lan
 
 Navigating the complexities of this project was far from straightforward though; it was a journey marked by numerous challenges that tested our ingenuity at every turn. Among these hurdles, sleep deprivation and an initial unfamiliarity with technologies such as Auth0 were significant, yet perhaps expected, obstacles. However, what caught us off guard was not the anticipated difficulties inherent to our ambitious endeavor but rather the persistent and perplexing bugs. Confronted with unexpected issues, our natural inclination was to introspect and to scour our own code for mistakes, assuming the fault lay within our work. The realization that the root of our troubles sometimes lay in third-party libraries came with a mix of relief and frustration. Unearthing bugs in external code, especially within tools and libraries trusted and utilized by developers globally, presented a unique challenge. It required us to extend our expertise beyond our project, delving into the intricacies of external codebases and the community-driven ecosystems that sustain them.
 
-![Open Issues](https://imgur.com/PKHAQYj.png)
-
-
+![Open Issues](https://imgur.com/H9UdQJO.png)
                            _One of the open bugs that got us in the LangChain library, visualized with [issue visualizer](https://github-issue-vizualiser.netlify.app/)_
 
 
