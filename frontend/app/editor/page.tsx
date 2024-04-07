@@ -262,7 +262,9 @@ export default function App() {
             </SectionTitle>
           </SectionsContainer>
           <OverviewContainer>
-            <OverviewTitleSC>Overview</OverviewTitleSC>
+            <OverviewTitleSC>
+              {activeSection === "overview" ? "Overview" : "Testing"}
+            </OverviewTitleSC>
             <OverviewSC>
               "This code file, named analysis.py, serves as the main script for
               data analysis in a project aimed at forecasting sales trends. The

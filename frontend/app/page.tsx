@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InputGroup, Input, Button } from "reactstrap";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
@@ -47,6 +47,7 @@ const GitHubButtonSC = styled.div`
   font-weight: 600;
   border-radius: 8px;
   gap: 10px;
+  cursor: pointer;
 `;
 
 const RepoLinkInputSC = styled.input`
@@ -54,9 +55,19 @@ const RepoLinkInputSC = styled.input`
   height: 50px;
   border-radius: 6px 0px 0px 6px;
   width: 500px;
-`;
+  padding-left: 12px;
 
+  &::placeholder {
+    color: #a5a5a5;
+    font-weight: 500;
+  }
+  &:active,
+  &:focus {
+    outline: none;
+  }
+`;
 const SubmitButtonSC = styled.div`
+  cursor: pointer;
   width: 70px;
   height: 50px;
   background-color: #e40764;
@@ -73,11 +84,7 @@ const RobotSC = styled.img`
   left: 0px;
 `;
 
-const LogoSC = styled.img`
-  position: relative;
-  top: 15px;
-  left: 0px;
-`;
+const LogoSC = styled.img``;
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State to store the input value
   const router = useRouter(); // useRouter hook for redirection
@@ -111,6 +118,14 @@ export default function Home() {
       alert("Request error: " + error.message);
     }
   };
+
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const codeParam = urlParams.get("code");
+    console.log(codeParam);
+  }, []);
+
   function loginWithGitHub() {
     window.location.assign(
       "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID
@@ -120,10 +135,9 @@ export default function Home() {
     <MainContainer>
       <ContentContainer>
         <TitleSC>
-          <LogoSC src="/files/logo.png" width={245} height={52} />
-          coding experience
+          <LogoSC src="/files/logo.png" width={700} height={153} />
         </TitleSC>
-        <TitleSC>one repository at a time</TitleSC>
+
         <SubTitleSC>
           ai-based code refactoring tool to help developers <br />
           elevate their legacy projects
