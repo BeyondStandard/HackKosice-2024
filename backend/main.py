@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import requests
 from typing import List
 import os
@@ -11,6 +12,8 @@ import asyncio
 import shutil
 from openai import OpenAI
 import prompt_constants
+import httpx
+
 
 app = FastAPI()
 
@@ -177,4 +180,27 @@ async def get_new_description(file_path: str):
         prompt_constants.PROMPT_TEMPLATE_EN_DESCRIBE
     )
     return res
+
+
+@app.get("/getAccessToken")
+async def get_access_token(code: str):
+    params = {
+        "client_id": os.getenv('CLIENT_ID'),
+        "client_secret": os.getenv('CLIENT_SECRET'),
+        "code": code,
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.post("https://github.com/login/oauth/access_token", params=params, headers={"Accept": "application/json"})
+        data = response.json()
+        print(data)
+        return JSONResponse(content=data)
+
+@app.get("/getUserData")
+async def get_user_data(request: Request):
+    authorization = request.headers.get("Authorization")
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://api.github.com/user", headers={"Authorization": authorization})
+        data = response.json()
+        print(data)
+        return JSONResponse(content=data)
 

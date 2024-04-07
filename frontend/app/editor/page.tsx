@@ -103,8 +103,9 @@ export default function App() {
   const [useDiffEditor, setUseDiffEditor] = useState(false);
   const [diffEditorModified, setDiffEditorModified] = useState("");
   const [explanation, setExplanation] = useState("");
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [description, setDescription] = useState("");
 
   const fetchFile = async (fileName: string) => {
     setSelectedFile(fileName);
@@ -178,6 +179,10 @@ export default function App() {
   }
 
   const compileOnClick = async () => {
+    if (!selectedFile) {
+      alert("No file selected")
+      return
+    }
     const queryParams = new URLSearchParams(window.location.search);
     const repoUrl = queryParams.get("repo_url");
     if (!repoUrl) {
@@ -194,25 +199,19 @@ export default function App() {
     let data = await response.json();
     setUseDiffEditor(true);
     setDiffEditorModified(data['result']);
-
-    // url = `https://televate-1fb46ecbb8ff.herokuapp.com/code-description/`;
-    // body = {
-    //   old_code: editorValue,
-    // };
-    // response = await fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-type": "application/json",
-    //   },
-    //   body: JSON.stringify(body),
-    // });
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-
-    // data = await response.json();
-    // setExplanation(data);
   };
+
+  const getDescription = async (url: string) => {
+    const response = await fetch(url, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    setDescription(data['result'])
+  }
 
   return (
     <div
@@ -245,11 +244,16 @@ export default function App() {
             display: "flex",
           }}
         >
+          <Button color="success" onClick={compileOnClick}>
+            Compile
+          </Button>
           <SectionsContainer>
             <SectionTitle
               isActive={activeSection === "overview"}
               onClick={() => {
                 setActiveSection("overview");
+                setDescription("")
+                getDescription(`https://televate-1fb46ecbb8ff.herokuapp.com/new-description/?file_path=${selectedFile}`)
               }}
             >
               overview
@@ -258,6 +262,8 @@ export default function App() {
               isActive={activeSection === "testing"}
               onClick={() => {
                 setActiveSection("testing");
+                setDescription("")
+                getDescription(`https://televate-1fb46ecbb8ff.herokuapp.com/new-description/?file_path=${selectedFile}`)
               }}
             >
               testing
@@ -265,34 +271,13 @@ export default function App() {
           </SectionsContainer>
           <OverviewContainer>
             <OverviewTitleSC>
-              {activeSection === "overview" ? "Overview" : "Testing"}
+              {/* {activeSection === "overview" ? "Overview" : "Testing"} */}
             </OverviewTitleSC>
-            <OverviewSC>
-              "This code file, named analysis.py, serves as the main script for
-              data analysis in a project aimed at forecasting sales trends. The
-              Python script is well-organized into distinct functions,
-              facilitating modularity and ease of maintenance. The code begins
-              with essential imports, including libraries such as pandas for
-              data manipulation and matplotlib for visualization. The main
-              functionalities of the script are encapsulated within functions.
-              For instance, the load_data function effectively imports the
-              dataset, ensuring data integrity and handling potential errors
-              gracefully. Subsequently, the "preprocess_data function undertakes
-              crucial data preprocessing steps, such as handling missing values
-              and encoding categorical variables. Moreover, the script includes
-              functions dedicated to exploratory data analysis tasks. The
-              "plot_distribution" function, for instance, generates histograms
-              to visualize the distribution of numerical features, aiding in
-              understanding the underlying patterns in the data. Additionally,
-              the "plot_correlation_matrix" function creates a correlation
-              matrix heatmap, facilitating the identification of relationships
-              between variables."
+            <OverviewSC style={{ width: '100%' }}>
+              {description}
             </OverviewSC>
           </OverviewContainer>
-          <Button color="success" onClick={compileOnClick}>
-            Compile
-          </Button>
-          <div>{explanation}</div>
+          <div></div>
         </div>
       </div>
     </div>

@@ -16,3 +16,4 @@ python-dotenv
 gitpython
 openai
 chromadb
+httpx
