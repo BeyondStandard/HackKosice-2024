@@ -157,7 +157,7 @@ async def get_new_code(repo_url: str, file_path: str, lang: str = "Python"):
 
     res = await query.get_response(
         f"Rewrite the file {file_path} identically in {lang}",
-        prompt_constants.PROMPT_TEMPLATE_EN_TRANSLATE
+        prompt_constants.PROMPT_TEMPLATE_EN_TRANSLATE.replace("Python", lang)
     )
     return res
 
