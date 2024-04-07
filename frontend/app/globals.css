@@ -32,8 +32,7 @@ body {
   }
 } */
 
-.title {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 100;
-  font-style: normal;
+.lines-content {
+  background-color: red;
+  color: green;
 }
