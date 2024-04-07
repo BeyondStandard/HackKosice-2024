@@ -8,6 +8,8 @@ import time
 import databackend
 import query
 import asyncio
+import shutil
+from openai import OpenAI
 
 app = FastAPI()
 
@@ -31,6 +33,22 @@ def get_github_token_header():
     }
     return headers
 
+
+async def run_rebuild_script(repo_path):
+    process = await asyncio.create_subprocess_shell(
+        f"python3 rebuild.py {repo_path}",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+
+    stdout, stderr = await process.communicate()  # Wait for the process to finish
+
+    if stderr:
+        print(f"Errors: {stderr.decode()}")
+
+    print(f"Output: {stdout.decode()}")
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World from FastAPI running on Heroku!"}
@@ -52,33 +70,47 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
     response = requests.get(raw_url, headers=get_github_token_header())
 
     print("Response status code: ", response.status_code)
-    print("Response content: ", response.content)
 
     if response.status_code == 200:
         # Return the file content
         # You might want to return the content type as well depending on the file
         return response.content
     else:
-        raise HTTPException(status_code=404, detail="File not found")
+        try:
+            print("Trying with master branch...")
+            raw_url = f"https://raw.githubusercontent.com/{repo_url}/master/{file_path}"
+            response = requests.get(raw_url, headers=get_github_token_header())
+            if response.status_code == 200:
+                return response.content
+        except:
+            print("Error! Response content: ", response.content)
+            raise HTTPException(status_code=response.status_code, detail="File not found")
 
 
 @app.get("/get-repo-structure/")
 async def get_repo_structure(repo_url: str):
     # Construct the GitHub API URL for getting repo contents
     # Adjust based on the structure of 'repo_url' you expect
-    # api_url = f"https://api.github.com/repos/{repo_url}/contents/"
+    #api_url = f"https://api.github.com/repos/{repo_url}/contents/"
     api_url = f"https://api.github.com/repos/{repo_url}/git/trees/main?recursive=1"
 
     response = requests.get(api_url, headers=get_github_token_header())
     print("Response status code: ", response.status_code)
-    print("Response content: ", response.content)
     if response.status_code == 200:
         repo_structure = response.json()
         # Filter out only relevant information to minimize bandwidth and processing
         # simplified_structure = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in repo_structure]
         return repo_structure
     else:
-        raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
+        try:
+            api_url = f"https://api.github.com/repos/{repo_url}/git/trees/master?recursive=1"
+            response = requests.get(api_url, headers=get_github_token_header())
+            if response.status_code == 200:
+                repo_structure = response.json()
+                return repo_structure
+        except:
+            print("Error! Response content: ", response.content)
+            raise HTTPException(status_code=response.status_code, detail="Failed to fetch repository structure")
 
 
 @app.get("/get-directory-contents/")
@@ -88,81 +120,55 @@ async def get_directory_contents(repo_url: str, dir_path: str):
 
     response = requests.get(api_url, headers=get_github_token_header())
     print("Response status code: ", response.status_code)
-    print("Response content: ", response.content)
     if response.status_code == 200:
         directory_structure = response.json()
         directory_contents = [{"name": item["name"], "path": item["path"], "type": item["type"]} for item in directory_structure]
         return directory_contents
     else:
+        print("Error! Response content: ", response.content)
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch directory contents")
 
 
 
 @app.post("/new-code/")
-async def get_new_code(code: Code):
+async def get_new_code(repo_url: str, file_path: str):
 
-    repo_path="justusjb/TicTacTOBOL"
+    #repo_url="Jorengarenar/cobBF"
 
-    data = databackend.Data(repo_path=repo_path)
+    data = databackend.Data(repo_path=repo_url)
+    data.clone_repository()
     data.load_from_repository()
 
-    res = await query.get_response()
+    # delete data
+    try:
+        shutil.rmtree("../tmp/data")
+    except:
+        pass
+
+    # export data
+    data.export_data()
+
+    # rebuild
+    await run_rebuild_script(repo_url)
+
+    res = await query.get_response(f"Rewrite the file {file_path} identically in Python")
     return res
 
 
-def lelelel():
-    time.sleep(3)
-    long_code = """
-    import streamlit as st
-    import pandas as pd
-    import numpy as np
-    
-    st.title('Uber pickups in NYC')
-    
-    DATE_COLUMN = 'date/time'
-    DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
-                'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
-                
-                @st.cache
-                def load_data(nrows):
-                    data = pd.read_csv(DATA_URL, nrows=nrows)
-                    lowercase = lambda x: str(x).lower()
-                    data.rename(lowercase, axis='columns', inplace=True)
-                    data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
-                    return data
-                    
-                    data_load_state = st.text('Loading data...')
-                    data = load_data(10000)
-                    data_load_state.text("Done! (using st.cache)")
-                
-                if st.checkbox('Show raw data'):
-                    st.subheader('Raw data')
-                    st.write(data)
-                    
-                    st.subheader('Number of pickups by hour')
-                    hist_values = np.histogram(data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
-                    st.bar_chart(hist_values)
-                    
-                    # Some number in the range 0-23
-                    hour_to_filter = st.slider('hour', 0, 23, 17)
-                    filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
-                    
-                    st.subheader('Map of all pickups at %s:00' % hour_to_filter)
-                    st.map(filtered_data)
-                    
-        """
-
-    return long_code
-
 
 @app.post("/code-description/")
-async def get_new_code(code: Code):
-    time.sleep(3)
-    code_desc = """
-    This code snippet is a Streamlit application that visualizes Uber pickups in NYC.
-    It loads a dataset of Uber pickups in NYC and displays the raw data when a checkbox is checked.
-    It also displays the number of pickups by hour in a bar chart and a map of all pickups at a selected hour.
-    """
+async def code_description(code: Code):
+    client = OpenAI()
+
+    code_desc = client.chat.completions.create(
+        model="gpt-3.5-turbo-0125",
+        messages=[
+            {"role": "system",
+             "content": "You are a code describing tool. You get code and you have to explain what is going on in the code."},
+            {"role": "user", "content": code.old_code}
+        ]
+    )
+
 
     return code_desc
 

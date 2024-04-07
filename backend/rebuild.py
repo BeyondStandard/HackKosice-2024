@@ -25,6 +25,7 @@ if __name__ == "__main__":
     )
 
     documents.extend(text_splitter.split_documents(data.data))
+    print(documents)
     vectordb = Chroma.from_documents(
         documents,
         persist_directory="../data/vectordb",

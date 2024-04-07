@@ -104,7 +104,10 @@ export default function App() {
   const [diffEditorModified, setDiffEditorModified] = useState("");
   const [explanation, setExplanation] = useState("");
   const [activeSection, setActiveSection] = useState("overview");
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const fetchFile = async (fileName: string) => {
+    setSelectedFile(fileName);
     console.log({ fileName });
     const queryParams = new URLSearchParams(window.location.search);
     const repoUrl = queryParams.get("repo_url");
@@ -175,16 +178,15 @@ export default function App() {
   }
 
   const compileOnClick = async () => {
-    let url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/`;
-    let body = {
-      old_code: editorValue,
-    };
+    const queryParams = new URLSearchParams(window.location.search);
+    const repoUrl = queryParams.get("repo_url");
+    if (!repoUrl) {
+      throw new Error("Repo URL not specified in the query parameters.");
+    }   
+    let url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/?repo_url=${repoUrl}&file_path=${selectedFile}`;
+    console.log({url})
     let response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(body),
+      method: "POST"
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -194,23 +196,23 @@ export default function App() {
     setUseDiffEditor(true);
     setDiffEditorModified(data);
 
-    url = `https://televate-1fb46ecbb8ff.herokuapp.com/code-description/`;
-    body = {
-      old_code: editorValue,
-    };
-    response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // url = `https://televate-1fb46ecbb8ff.herokuapp.com/code-description/`;
+    // body = {
+    //   old_code: editorValue,
+    // };
+    // response = await fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-type": "application/json",
+    //   },
+    //   body: JSON.stringify(body),
+    // });
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${response.status}`);
+    // }
 
-    data = await response.json();
-    setExplanation(data);
+    // data = await response.json();
+    // setExplanation(data);
   };
 
   return (
