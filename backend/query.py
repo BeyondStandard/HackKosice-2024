@@ -1,7 +1,7 @@
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain_community.vectorstores import Chroma
 from langchain.prompts.prompt import PromptTemplate
-from langchain_openai import OpenAI, OpenAIEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 import asyncio
 import logging
@@ -51,9 +51,11 @@ class GPTChatter:
         )
         r = vectordb.as_retriever(search_kwargs={"k": 10})
         self.qa_chain = RetrievalQA.from_chain_type(
-            llm=OpenAI(
+            llm=ChatOpenAI(
                 streaming=True,
                 temperature=0,
+                max_tokens=4096,
+                model=os.environ["gptModel"],
                 openai_api_key=os.environ["OPENAI_API_KEY"],
             ),
             retriever=r,
