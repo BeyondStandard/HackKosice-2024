@@ -76,8 +76,15 @@ async def get_file(repo_url: str, file_path: str, branch: str = "main"):
         # You might want to return the content type as well depending on the file
         return response.content
     else:
-        print("Error! Response content: ", response.content)
-        raise HTTPException(status_code=response.status_code, detail="File not found")
+        try:
+            print("Trying with master branch...")
+            raw_url = f"https://raw.githubusercontent.com/{repo_url}/master/{file_path}"
+            response = requests.get(raw_url, headers=get_github_token_header())
+            if response.status_code == 200:
+                return response.content
+        except:
+            print("Error! Response content: ", response.content)
+            raise HTTPException(status_code=response.status_code, detail="File not found")
 
 
 @app.get("/get-repo-structure/")
