@@ -33,7 +33,6 @@ const SubTitleSC = styled.div`
   font-size: 24px;
   margin: 16px auto;
   text-align: center;
-  font-variant: small-caps;
 `;
 const GitHubButtonSC = styled.div`
   display: flex;
@@ -120,9 +119,9 @@ export default function Home() {
   };
 
   function loginWithGitHub() {
-    let user = prompt("Enter a username:")
+    let user = prompt("Enter a username:");
     if (!user) {
-      return
+      return;
     }
     router.push("/repositories?user=" + user);
     // window.location.assign(
@@ -137,7 +136,7 @@ export default function Home() {
         </TitleSC>
 
         <SubTitleSC>
-          ai-based code refactoring tool to help developers <br />
+          AI-based code refactoring tool to help developers <br />
           elevate their legacy projects
         </SubTitleSC>
         <div style={{ display: "flex", margin: "auto" }}>
