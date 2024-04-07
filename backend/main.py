@@ -140,7 +140,10 @@ async def get_new_code(repo_url: str, file_path: str):
     data.load_from_repository()
 
     # delete data
-    shutil.rmtree("../data")
+    try:
+        shutil.rmtree("../tmp/data")
+    except:
+        pass
 
     # export data
     data.export_data()
