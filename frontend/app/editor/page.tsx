@@ -11,7 +11,6 @@ function createFileTree(files) {
       fileSystem.push(element)
     }
   })
-  console.log(fileSystem)
   return fileSystem
 }
 
@@ -66,8 +65,7 @@ export default function App() {
         }
 
         const data = await response.json();
-        createFileTree(data['tree']);
-        setRootStructure(data['tree']);
+        setRootStructure(createFileTree(data['tree']));
       } catch (error) {
         setError(error.message);
       } finally {
@@ -127,13 +125,16 @@ export default function App() {
 
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: "gray" }}>
-      <div style={{ flex: 1 }}>
-        {/* <FolderStructure structure={rootStructure} onFileClick={fetchFile}/> */}
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: "#6c757d" }}>
+      <div style={{ flex: '0 1 auto', overflow: 'auto' }}>
+        {rootStructure.map((file, index) => (
+          <div style={{margin: '5px'}}>
+            <Button color='secondary' onClick={() => fetchFile(file.path)}>{file.path.split('/').pop()}</Button>
+            </div>
+        ))}
       </div>
       <div style={{ flex: 4 }}>
-        {/* original={editorValue} modified={diffEditorModified} */}
-        <DiffEditor height="80vh" width="100%" original='a\n\a' modified="b\nb\b" />
+        <DiffEditor height="80vh" width="100%" original={editorValue} modified={diffEditorModified} />
         <div style={{height: '20vh', backgroundColor: 'black', color: 'white'}}>
           <Button color="success" onClick={compileOnClick}>Compile</Button>
           <div>
