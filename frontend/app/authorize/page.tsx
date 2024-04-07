@@ -11,7 +11,6 @@ export default function Auth() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const codeParam = urlParams.get("code");
-    console.log(codeParam);
 
     if (codeParam && localStorage.getItem("accessToken") === null) {
       async function getAccessToken() {
@@ -33,6 +32,7 @@ export default function Auth() {
             }
           });
       }
+
       getAccessToken();
     }
   }
