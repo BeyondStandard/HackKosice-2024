@@ -37,8 +37,6 @@ app.get("/getAccessToken", async function (req, res) {
     });
 });
 
-//getUserData
-
 app.get("/getUserData", async function (req, res) {
   req.get("Authorization"); //bearer access token
   await fetch("https://api.github.com/user", {
