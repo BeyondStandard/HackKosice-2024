@@ -118,6 +118,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState("overview");
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState("");
+  const [descriptionSpinnerSpinning, setDescriptionSpinnerSpinning] = useState(false)
 
   const fetchFile = async (fileName: string) => {
     setSelectedFile(fileName);
@@ -222,6 +223,7 @@ export default function App() {
     }
 
     const data = await response.json();
+    setDescriptionSpinnerSpinning(false)
     setDescription(data["result"]);
   };
 
@@ -260,8 +262,9 @@ export default function App() {
             <SectionTitle
               isActive={activeSection === "overview"}
               onClick={() => {
-                setActiveSection("overview");
+                setActiveSection("overview")
                 setDescription("");
+                setDescriptionSpinnerSpinning(true)
                 getDescription(
                   `https://televate-1fb46ecbb8ff.herokuapp.com/new-description/?file_path=${selectedFile}`
                 );
@@ -272,8 +275,9 @@ export default function App() {
             <SectionTitle
               isActive={activeSection === "testing"}
               onClick={() => {
-                setActiveSection("testing");
+                setActiveSection("testing")
                 setDescription("");
+                setDescriptionSpinnerSpinning(true)
                 getDescription(
                   `https://televate-1fb46ecbb8ff.herokuapp.com/new-test/?file_path=${selectedFile}`
                 );
@@ -288,6 +292,7 @@ export default function App() {
             </OverviewTitleSC>
             <OverviewSC style={{ width: "100%" }}>{description}</OverviewSC>
           </OverviewContainer>
+          {descriptionSpinnerSpinning && <Spinner/>}
           <ButtonsContainerSC>
             <LanguageButtonSC
               onClick={() => {
