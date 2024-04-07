@@ -26,7 +26,6 @@ const TitleSC = styled.div`
   margin: auto;
   text-align: center;
   font-variant: small-caps;
-  line
 `;
 const SubTitleSC = styled.div`
   display: flex;
@@ -77,7 +76,7 @@ const RobotSC = styled.img`
 const LogoSC = styled.img`
   position: relative;
   top: 15px;
-  left: 50px;
+  left: 0px;
 `;
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State to store the input value
