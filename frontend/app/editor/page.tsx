@@ -184,7 +184,6 @@ export default function App() {
       throw new Error("Repo URL not specified in the query parameters.");
     }   
     let url = `https://televate-1fb46ecbb8ff.herokuapp.com/new-code/?repo_url=${repoUrl}&file_path=${selectedFile}`;
-    console.log({url})
     let response = await fetch(url, {
       method: "POST"
     });
@@ -194,7 +193,7 @@ export default function App() {
 
     let data = await response.json();
     setUseDiffEditor(true);
-    setDiffEditorModified(data);
+    setDiffEditorModified(data['result']);
 
     // url = `https://televate-1fb46ecbb8ff.herokuapp.com/code-description/`;
     // body = {
@@ -235,6 +234,7 @@ export default function App() {
           width="100%"
           original={editorValue}
           modified={diffEditorModified}
+          language="python"
           theme={"vs-dark"}
         />
         <div
