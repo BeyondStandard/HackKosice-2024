@@ -154,7 +154,7 @@ async def get_new_code(repo_url: str, file_path: str):
 
     res = await query.get_response(
         f"Rewrite the file {file_path} identically in Python",
-        prompt_constants.PROMPT_TEMPLATE_EN
+        prompt_constants.PROMPT_TEMPLATE_EN_TRANSLATE
     )
     return res
 
